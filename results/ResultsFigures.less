@@ -1,0 +1,210 @@
+
+*{
+  box-sizing: border-box;
+}
+.vizBlock_errors{
+  margin-top: 100px;
+}
+
+.vizBlock, .vizBlock_errors{
+  font-family: Roboto;
+  //background-color: lightyellow;
+  > .trialRow{
+    > .groupName{
+      display: inline-block;
+      width: 200px;
+      text-align: right;
+      font-weight: 300;
+    }
+    > .percentileViz{
+      background-color: white;
+      margin-left: 20px;
+      display: inline-block;
+      width: 180px;
+      //background-color: lightgreen;
+      position: relative;
+      vertical-align: top;
+      height: 25px;
+      &.perf_accuracy{ 
+        width: 170px;
+        .label:after{
+          content: "%";
+          color: gray;
+          padding-left: 0px;
+          font-size: 0.8em;
+        }
+      }
+      &.perf_time{ 
+        width: 150px;
+        .label:after{
+          content: "sec";
+          color: gray;
+          padding-left: 0px;
+          font-size: 0.8em;
+        }
+      }
+      &.perf_training{
+        width: 100px;
+      }
+      > .groupMean{
+        position: absolute;
+        top: 17px;
+        height: 2px;
+        width: 0; 
+        height: 0; 
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid black;
+        z-index: 250;
+      }
+      > .groupMedian{
+        position: absolute;
+        top: 0px;
+        height: 17px;
+        width: 3px;
+        margin-left: -1px;
+        background-color: black;
+        z-index: 250;
+      }
+      > .percentile_block{
+        position: absolute;
+        display: block;
+        height: 17px;
+        top: 0px;
+        border-width: 0px 1px;
+        border-style: solid;
+        border-color: #2AAD97;
+        &.q_40_60 {
+            background-color: lighten(rgb(27, 111, 97), 15%);
+            z-index: 150;
+        }
+        &.q_30_70 {
+            background-color: lighten(rgb(27, 111, 97), 40%);
+            z-index: 140;
+        }
+        &.q_20_80 {
+            background-color: lighten(rgb(27, 111, 97), 60%);
+            z-index: 130;
+        }
+        &.q_10_90 {
+            background-color: lighten(rgb(27, 111, 97), 70%);
+            z-index: 120;
+        }
+      }
+      > .tick{
+        position: absolute;
+        top: 18px;
+        > .label{
+          width: 20px;
+          left: -10px;
+          position: relative;
+          text-align: center;
+          display: block;
+          top: 5px;
+          font-size: 12px;
+        }
+        > .line{
+          display: block;
+          height: 126px;
+          width: 1px;
+          border-left: dashed 1px gray;
+          bottom: 9px;
+          position: absolute;
+        }
+      }
+    }
+  }
+}
+
+.bootstrap_results{
+  margin-top: 50px;
+}
+
+#bootstrap_group{
+  font-family: Roboto;
+  margin-top: 30px;
+  position: relative;
+  .boot_header{
+    position: absolute;
+    top: -25px;
+    font-weight: 300;
+  }
+  .tickGroup{
+    position: absolute;
+    display: inline-block;
+    > .tick{
+      position: absolute;
+      left: 0px;
+      width: 300px;
+      border-top: dotted 1px lightgray;
+      &[tickVal="0"]{
+        border-top: solid 1px black;
+        box-shadow: 0px 1px 1px gray;
+      }
+      > .label{
+        font-size: 0.6em;
+        width: 17px;
+        left: -20px;
+        position: absolute;
+        top: -0.5em;
+        text-align: right;
+        display: block;
+        font-weight: 300;
+      }
+    }
+  }
+  .bootstrap_figure{
+    margin-left: 40px;
+  }
+
+  .trialGroup{
+    display: inline-block;
+    width: 20px;
+    height: 125px;
+    position: relative;
+    border-left: solid 1px lightgray;
+    .mean_pt{
+      position: absolute;
+      display: block;
+      border-radius: 4px;
+      width: 3px;
+      height: 3px;
+      background-color: black;
+      left: 11px;
+      margin-left: -2px;
+      margin-top: -2px;
+    }
+    .low_pt{
+      position: absolute;
+      display: block;
+      width: 11px;
+      height: 1px;
+      background-color: gray;
+      left: 5px;
+    }
+    .high_pt{
+      position: absolute;
+      display: block;
+      width: 11px;
+      height: 1px;
+      background-color: gray;
+      left: 5px;
+    }
+    .low_high_line{
+      position: absolute;
+      display: block;
+      width: 1px;
+      left: 10px;
+      background-color: lightgray;
+    }
+    .trialGroupLabel{
+      font-weight: 500;
+      font-size: 0.6em;
+      position: absolute;
+      bottom: 2px;
+      display: block;
+      width: 18px;
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,134 @@
+<!-- http://localhost:10090/figA.html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Chubuk Demo Page</title><meta charset="utf-8">
+    <script type="text/javascript" src="./js/d3.3.5.5.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
+    <!-- Chubuk.js library -->
+    <script type="text/javascript" src="../../chubuk.js/chubuk.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../../chubuk.js/chubuk.css" type="text/css" charset="utf-8">
+
+<script type="text/javascript">
+
+$(document).ready( function(){
+  chubuk = new Chubuk();
+  chubuk.setSize($(".chartWrapper").width(),$(".chartWrapper").height());
+
+  chubuk.setConfig("chart_type","stacked_bars");
+  chubuk.setConfig("showgridlines","true");
+  chubuk.setConfig("wrappedColumnGap",12);
+  chubuk.setConfig("showlabel",true);
+
+  chubuk.setConfig("chart_type","treemap");
+
+  chubuk.color_1 = d3.rgb(63, 122, 180);
+  chubuk.color_2 = d3.rgb(191, 35, 32);
+
+  chubuk.theData = [
+    {Label:"Alabama", Winner: "Romney", Value:9},
+    {Label:"Alaska", Winner: "Romney", Value:3},
+    {Label:"Arizona", Winner: "Romney", Value:11},
+    {Label:"Arkansas", Winner: "Romney", Value:6},
+    {Label:"California", Winner: "Obama", Value:55},
+    {Label:"Colorado", Winner: "Obama", Value:9},
+    {Label:"Connecticut", Winner: "Obama", Value:7},
+    {Label:"Delaware", Winner: "Obama", Value:3},
+    {Label:"District of Columbia", Winner: "Obama", Value:3},
+    {Label:"Florida", Winner: "Obama", Value:29},
+    {Label:"Georgia", Winner: "Romney", Value:16},
+    {Label:"Hawaii", Winner: "Obama", Value:4},
+    {Label:"Idaho", Winner: "Romney", Value:4},
+    {Label:"Illinois", Winner: "Obama", Value:20},
+    {Label:"Indiana", Winner: "Romney", Value:11},
+    {Label:"Iowa", Winner: "Obama", Value:6},
+    {Label:"Kansas", Winner: "Romney", Value:6},
+    {Label:"Kentucky", Winner: "Romney", Value:8},
+    {Label:"Louisiana", Winner: "Romney", Value:8},
+    {Label:"Maine", Winner: "Obama", Value:4},
+    {Label:"Maryland", Winner: "Obama", Value:10},
+    {Label:"Massachusetts", Winner: "Obama", Value:11},
+    {Label:"Michigan", Winner: "Obama", Value:16},
+    {Label:"Minnesota", Winner: "Obama", Value:10},
+    {Label:"Mississippi", Winner: "Romney", Value:6},
+    {Label:"Missouri", Winner: "Romney", Value:10},
+    {Label:"Montana", Winner: "Romney", Value:3},
+    {Label:"Nebraska", Winner: "Romney", Value:5},
+    {Label:"Nevada", Winner: "Obama", Value:6},
+    {Label:"New Hampshire", Winner: "Obama", Value:4},
+    {Label:"New Jersey", Winner: "Obama", Value:14},
+    {Label:"New Mexico", Winner: "Obama", Value:5},
+    {Label:"New York", Winner: "Obama", Value:29},
+    {Label:"North Carolina", Winner: "Romney", Value:15},
+    {Label:"North Dakota", Winner: "Romney", Value:3},
+    {Label:"Ohio", Winner: "Obama", Value:18},
+    {Label:"Oklahoma", Winner: "Romney", Value:7},
+    {Label:"Oregon", Winner: "Obama", Value:7},
+    {Label:"Pennsylvania", Winner: "Obama", Value:20},
+    {Label:"Rhode Island", Winner: "Obama", Value:4},
+    {Label:"South Carolina", Winner: "Romney", Value:9},
+    {Label:"South Dakota", Winner: "Romney", Value:3},
+    {Label:"Tennessee", Winner: "Romney", Value:11},
+    {Label:"Texas", Winner: "Romney", Value:38},
+    {Label:"Utah", Winner: "Romney", Value:6},
+    {Label:"Vermont", Winner: "Obama", Value:3},
+    {Label:"Virginia", Winner: "Obama", Value:13},
+    {Label:"Washington", Winner: "Obama", Value:12},
+    {Label:"West Virginia", Winner: "Romney", Value:5},
+    {Label:"Wisconsin", Winner: "Obama", Value:10},
+    {Label:"Wyoming", Winner: "Romney", Value:3},
+  ];
+  chubuk.theData.forEach(function(d){
+    if(d.Winner==="Romney") d.Value*=-1;
+  });
+  chubuk.sortData_decr(true);
+
+  chubuk.insertDOM_Records();
+  chubuk.DOM.records.attr("winner",function(d){ return d.Winner;});
+
+  if(event){
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+});
+
+</script>
+<style type="text/css" media="screen">
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin:0px;
+  padding: 0px;
+}
+.Chubuk{
+  height: 400px;
+  width: 600px;
+  margin: 0 auto;
+  padding-top: 25px;
+  font-family: 'Roboto', sans-serif;
+}
+.record[winner="Obama"] .block{
+  background-color: #3f70b4 !important;
+}
+.record[winner="Romney"] .block{
+  background-color: #bf2320 !important;
+}
+
+.Chubuk .record > .label{
+  color: white;
+  font-weight: 100;
+  text-shadow: none;
+}
+</style>
+	</head>
+  <body>
+    <div class="Chubuk">
+      <div class="configPanel" active="false">
+        <div class="selectVizType"></div>
+      </div>
+    </div>
+  </body>
+</html>

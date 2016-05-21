@@ -1,0 +1,219 @@
+* {
+  box-sizing: border-box;
+}
+.vizBlock_errors {
+  margin-top: 100px;
+}
+.vizBlock,
+.vizBlock_errors {
+  font-family: Roboto;
+}
+.vizBlock > .trialRow > .groupName,
+.vizBlock_errors > .trialRow > .groupName {
+  display: inline-block;
+  width: 200px;
+  text-align: right;
+  font-weight: 300;
+}
+.vizBlock > .trialRow > .percentileViz,
+.vizBlock_errors > .trialRow > .percentileViz {
+  background-color: white;
+  margin-left: 20px;
+  display: inline-block;
+  width: 180px;
+  position: relative;
+  vertical-align: top;
+  height: 25px;
+}
+.vizBlock > .trialRow > .percentileViz.perf_accuracy,
+.vizBlock_errors > .trialRow > .percentileViz.perf_accuracy {
+  width: 170px;
+}
+.vizBlock > .trialRow > .percentileViz.perf_accuracy .label:after,
+.vizBlock_errors > .trialRow > .percentileViz.perf_accuracy .label:after {
+  content: "%";
+  color: gray;
+  padding-left: 0px;
+  font-size: 0.8em;
+}
+.vizBlock > .trialRow > .percentileViz.perf_time,
+.vizBlock_errors > .trialRow > .percentileViz.perf_time {
+  width: 150px;
+}
+.vizBlock > .trialRow > .percentileViz.perf_time .label:after,
+.vizBlock_errors > .trialRow > .percentileViz.perf_time .label:after {
+  content: "sec";
+  color: gray;
+  padding-left: 0px;
+  font-size: 0.8em;
+}
+.vizBlock > .trialRow > .percentileViz.perf_training,
+.vizBlock_errors > .trialRow > .percentileViz.perf_training {
+  width: 100px;
+}
+.vizBlock > .trialRow > .percentileViz > .groupMean,
+.vizBlock_errors > .trialRow > .percentileViz > .groupMean {
+  position: absolute;
+  top: 17px;
+  height: 2px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+  z-index: 250;
+}
+.vizBlock > .trialRow > .percentileViz > .groupMedian,
+.vizBlock_errors > .trialRow > .percentileViz > .groupMedian {
+  position: absolute;
+  top: 0px;
+  height: 17px;
+  width: 3px;
+  margin-left: -1px;
+  background-color: black;
+  z-index: 250;
+}
+.vizBlock > .trialRow > .percentileViz > .percentile_block,
+.vizBlock_errors > .trialRow > .percentileViz > .percentile_block {
+  position: absolute;
+  display: block;
+  height: 17px;
+  top: 0px;
+  border-width: 0px 1px;
+  border-style: solid;
+  border-color: #2AAD97;
+}
+.vizBlock > .trialRow > .percentileViz > .percentile_block.q_40_60,
+.vizBlock_errors > .trialRow > .percentileViz > .percentile_block.q_40_60 {
+  background-color: #2aad97;
+  z-index: 150;
+}
+.vizBlock > .trialRow > .percentileViz > .percentile_block.q_30_70,
+.vizBlock_errors > .trialRow > .percentileViz > .percentile_block.q_30_70 {
+  background-color: #78decd;
+  z-index: 140;
+}
+.vizBlock > .trialRow > .percentileViz > .percentile_block.q_20_80,
+.vizBlock_errors > .trialRow > .percentileViz > .percentile_block.q_20_80 {
+  background-color: #caf2eb;
+  z-index: 130;
+}
+.vizBlock > .trialRow > .percentileViz > .percentile_block.q_10_90,
+.vizBlock_errors > .trialRow > .percentileViz > .percentile_block.q_10_90 {
+  background-color: #f3fcfb;
+  z-index: 120;
+}
+.vizBlock > .trialRow > .percentileViz > .tick,
+.vizBlock_errors > .trialRow > .percentileViz > .tick {
+  position: absolute;
+  top: 18px;
+}
+.vizBlock > .trialRow > .percentileViz > .tick > .label,
+.vizBlock_errors > .trialRow > .percentileViz > .tick > .label {
+  width: 20px;
+  left: -10px;
+  position: relative;
+  text-align: center;
+  display: block;
+  top: 5px;
+  font-size: 12px;
+}
+.vizBlock > .trialRow > .percentileViz > .tick > .line,
+.vizBlock_errors > .trialRow > .percentileViz > .tick > .line {
+  display: block;
+  height: 126px;
+  width: 1px;
+  border-left: dashed 1px gray;
+  bottom: 9px;
+  position: absolute;
+}
+.bootstrap_results {
+  margin-top: 50px;
+}
+#bootstrap_group {
+  font-family: Roboto;
+  margin-top: 30px;
+  position: relative;
+}
+#bootstrap_group .boot_header {
+  position: absolute;
+  top: -25px;
+  font-weight: 300;
+}
+#bootstrap_group .tickGroup {
+  position: absolute;
+  display: inline-block;
+}
+#bootstrap_group .tickGroup > .tick {
+  position: absolute;
+  left: 0px;
+  width: 300px;
+  border-top: dotted 1px lightgray;
+}
+#bootstrap_group .tickGroup > .tick[tickVal="0"] {
+  border-top: solid 1px black;
+  box-shadow: 0px 1px 1px gray;
+}
+#bootstrap_group .tickGroup > .tick > .label {
+  font-size: 0.6em;
+  width: 17px;
+  left: -20px;
+  position: absolute;
+  top: -0.5em;
+  text-align: right;
+  display: block;
+  font-weight: 300;
+}
+#bootstrap_group .bootstrap_figure {
+  margin-left: 40px;
+}
+#bootstrap_group .trialGroup {
+  display: inline-block;
+  width: 20px;
+  height: 125px;
+  position: relative;
+  border-left: solid 1px lightgray;
+}
+#bootstrap_group .trialGroup .mean_pt {
+  position: absolute;
+  display: block;
+  border-radius: 4px;
+  width: 3px;
+  height: 3px;
+  background-color: black;
+  left: 11px;
+  margin-left: -2px;
+  margin-top: -2px;
+}
+#bootstrap_group .trialGroup .low_pt {
+  position: absolute;
+  display: block;
+  width: 11px;
+  height: 1px;
+  background-color: gray;
+  left: 5px;
+}
+#bootstrap_group .trialGroup .high_pt {
+  position: absolute;
+  display: block;
+  width: 11px;
+  height: 1px;
+  background-color: gray;
+  left: 5px;
+}
+#bootstrap_group .trialGroup .low_high_line {
+  position: absolute;
+  display: block;
+  width: 1px;
+  left: 10px;
+  background-color: lightgray;
+}
+#bootstrap_group .trialGroup .trialGroupLabel {
+  font-weight: 500;
+  font-size: 0.6em;
+  position: absolute;
+  bottom: 2px;
+  display: block;
+  width: 18px;
+  text-align: center;
+}

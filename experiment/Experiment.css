@@ -1,0 +1,501 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0px;
+  padding: 0px;
+  background-color: white;
+}
+.Chubuk {
+  height: 450px;
+  width: 800px;
+  margin: 0 auto;
+  /* centered */
+  pointer-events: none;
+}
+.Chubuk .record[highlight] {
+  z-index: 9999 !important;
+}
+.Chubuk .record .theDot {
+  font-size: 0.9em;
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  display: inline-block;
+  top: calc(50% - 8px);
+  left: calc(50% - 6px);
+}
+.Chubuk .record[highlight="opt_1"] .theDot {
+  color: #017801;
+}
+.Chubuk .record[highlight="opt_2"] .theDot {
+  color: #910791;
+}
+.Chubuk[chart_type="piled_bars"] .theDot {
+  top: calc(50% - 10px);
+  left: initial;
+  right: 0px;
+}
+.Chubuk .configPanel {
+  display: none;
+}
+.Chubuk > .chartAxis > .scale > .tick > .text {
+  display: none;
+}
+.rank_mark {
+  display: none;
+  position: absolute;
+}
+.rank_mark:before {
+  color: gray;
+  content: "#";
+}
+#rank_mark_large {
+  right: -40px;
+  bottom: 0px;
+}
+#rank_mark_small {
+  left: -20px;
+  top: 0px;
+}
+body {
+  font-family: Roboto;
+  background-color: white;
+}
+body[complete="true"] .Chubuk {
+  opacity: 0.2;
+  pointer-events: none !important;
+}
+body[complete="true"] .done_message {
+  display: block;
+}
+body[complete="true"] .warning_dont_close {
+  display: none;
+}
+body[complete="true"] #fullscreenButton {
+  opacity: 1;
+}
+body[isFullScreen="true"] #fullscreenButton {
+  opacity: 0;
+}
+body[isFullScreen="true"] #fullscreenButton:before {
+  content: "You can click here to exit full-screen.";
+}
+body[trainingTrial="true"] #tickTimer,
+body[trainingTrial="true"] #progressIndex {
+  color: orangered !important;
+  font-weight: 300;
+}
+body[trainingTrial="true"] #tickTimer > .fa,
+body[trainingTrial="true"] #progressIndex > .fa {
+  display: none;
+}
+body[trainingTrial="true"] .taskWrapper > .task > .task_helper {
+  display: inline-block;
+}
+body .teach_VIEW {
+  display: none;
+}
+body .teach_COMP_RANK {
+  display: none;
+}
+body[taskType="COMP"] .task.task_larger,
+body[taskType="COMP"] .task.task_larger_percentage {
+  display: block;
+}
+body[taskType="COMP"] .teach_COMP_RANK {
+  display: block;
+}
+body[taskType="RANK"] .task.task_rank,
+body[taskType="RANK"] .rank_mark {
+  display: block;
+}
+body[taskType="RANK"] .teach_COMP_RANK {
+  display: block;
+}
+body[taskType="RANK"] .record[highlight="opt_2"] .theDot {
+  display: none;
+}
+body[taskType="VIEW"] .task.task_view {
+  display: block;
+}
+body[taskType="VIEW"] .teach_VIEW {
+  display: block;
+}
+body[taskType="VIEW"] .record[highlight] .theDot {
+  display: none;
+}
+body[chart="PB"] #rank_mark_large {
+  left: -40px;
+  right: auto;
+  bottom: 0px;
+}
+body[chart="PB"] #rank_mark_small {
+  right: -20px;
+  left: auto;
+  top: 0px;
+}
+body[teach="true"] .taskWrapper {
+  display: none;
+}
+body[teach="true"] .teaching_sequence {
+  display: block;
+}
+body[teach="true"] .Chubuk .record {
+  -webkit-transition: left 1500ms ease-in-out, width 1500ms ease-in-out, height 1500ms ease-in-out, top 1500ms ease-in-out;
+  -moz-transition: left 1500ms ease-in-out, width 1500ms ease-in-out, height 1500ms ease-in-out, top 1500ms ease-in-out;
+  -o-transition: left 1500ms ease-in-out, width 1500ms ease-in-out, height 1500ms ease-in-out, top 1500ms ease-in-out;
+  transition: left 1500ms ease-in-out, width 1500ms ease-in-out, height 1500ms ease-in-out, top 1500ms ease-in-out;
+}
+#fullscreenButton {
+  text-align: center;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: solid 1px lightgray;
+  padding: 1px 5px;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 200;
+  background-color: #EBDBDB;
+  letter-spacing: 1px;
+}
+#fullscreenButton:hover {
+  background-color: #DFBBBB;
+}
+#fullscreenButton:before {
+  content: "Please click here to view full-screen.";
+}
+.done_message {
+  display: none;
+  position: fixed;
+  left: 0px;
+  top: 20%;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  background-color: #d9e3d5;
+  padding: 20px 0px;
+  border: solid 2px #223B22;
+  box-shadow: 2px 2px 20px #979797;
+}
+.done_message > .completion_code {
+  font-weight: 700;
+  font-size: 1.2em;
+  display: inline-block;
+  margin: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 5px;
+  border-radius: 5px;
+}
+.warning_dont_close {
+  position: fixed;
+  top: 10px;
+}
+.warning_dont_close.warning_left {
+  left: 10px;
+}
+.warning_dont_close.warning_right {
+  right: 10px;
+}
+.warning_dont_close .fa {
+  color: orangered;
+}
+.warning_dont_close .info_text {
+  font-size: 0.8em;
+  font-style: italic;
+}
+.teaching_sequence {
+  width: 800px;
+  margin: 0 auto;
+  margin-top: 15px;
+  display: block;
+  font-family: Roboto;
+  cursor: default;
+  position: relative;
+  display: none;
+  text-align: center;
+}
+.teaching_sequence > .trigger_button {
+  border-radius: 4px;
+  border: solid 1px lightgray;
+  box-shadow: 1px 1px 2px gray;
+  cursor: pointer;
+  margin: 4px;
+  display: inline-block;
+  padding: 3px;
+  clear: both;
+}
+.teaching_sequence > .trigger_button:hover {
+  background-color: #EEE;
+  border: solid 1px orangered;
+}
+.teaching_sequence > .trigger_button:hover > .fa {
+  color: orangered;
+}
+.teaching_sequence > .trigger_button.trigger_long {
+  display: none;
+}
+.teaching_sequence > .trigger_button.trigger_convert {
+  display: none;
+}
+.teaching_sequence > .trigger_button.trigger_start_exp {
+  display: none;
+}
+.teaching_sequence > .trigger_button.trigger_continue {
+  display: none;
+  font-weight: 700;
+}
+.teaching_sequence .teaching_text {
+  display: none;
+  margin: 5px;
+  border-top: solid 1px lightgray;
+  border-bottom: solid 1px lightgray;
+  padding: 5px;
+  font-weight: 400;
+}
+.teaching_sequence .teaching_text > i {
+  font-weight: 500;
+  font-style: normal;
+}
+.taskWrapper {
+  width: 800px;
+  margin: 0 auto;
+  margin-top: 15px;
+  display: block;
+  font-family: Roboto;
+  cursor: default;
+  position: relative;
+}
+.taskWrapper #tickTimer {
+  position: absolute;
+  top: 0em;
+  left: 0em;
+}
+.taskWrapper #tickTimer #in_tickTimer {
+  padding-left: 3px;
+}
+.taskWrapper #tickTimer[threshold="true"] {
+  color: orangered;
+}
+.taskWrapper #tickTimer[threshold="true"]:after {
+  content: " !";
+}
+.taskWrapper #progressIndex {
+  position: absolute;
+  top: 0em;
+  right: 0em;
+  color: gray;
+}
+.taskWrapper #progressIndex #in_progressIndex {
+  padding-right: 3px;
+}
+.taskWrapper > .task {
+  display: block;
+  opacity: 0;
+  text-align: center;
+  -webkit-transition: opacity 200ms ease-in-out;
+  -moz-transition: opacity 200ms ease-in-out;
+  -o-transition: opacity 200ms ease-in-out;
+  transition: opacity 200ms ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin-bottom: 10px;
+  pointer-events: none;
+}
+.taskWrapper > .task > .task_helper {
+  display: none;
+  color: gray;
+  font-weight: 100;
+}
+.taskWrapper > .task[active="true"] {
+  opacity: 1;
+  pointer-events: all;
+}
+.taskWrapper > .task[answered="true"] .task_helper {
+  opacity: 0;
+}
+.taskWrapper > .task.task_larger {
+  display: none;
+}
+.taskWrapper > .task.task_larger .marked_block {
+  margin: 0px 10px;
+  cursor: pointer;
+}
+.taskWrapper > .task.task_larger .marked_block:hover {
+  background-color: #FFDCDC;
+  text-shadow: 0px 0px 5px red, 0px 0px 5px red, 0px 0px 5px red, 0px 0px 5px red;
+}
+.taskWrapper > .task.task_larger .qmark_or_dot:after {
+  content: "?";
+}
+.taskWrapper > .task.task_larger[answered="true"] .qmark_or_dot:after {
+  content: ".";
+}
+.taskWrapper > .task.task_larger[answered="true"] .not_answered {
+  opacity: 0.2;
+}
+.taskWrapper > .task.task_larger[answered="true"] .marked_block {
+  pointer-events: none;
+}
+.taskWrapper > .task.task_larger[answered="true"] .marked_block:not([selected="true"]) {
+  opacity: 0.2;
+}
+.taskWrapper > .task.task_larger[answered="true"] .marked_block[selected="true"] {
+  margin: 0px 7px;
+}
+.taskWrapper > .task.task_larger_percentage {
+  display: none;
+}
+.taskWrapper > .task.task_larger_percentage .marked_block {
+  width: 25px;
+  position: relative;
+  margin: 0px 4px;
+  top: -2px;
+}
+.taskWrapper > .task.task_larger_percentage .percentage_group {
+  width: 90%;
+}
+.taskWrapper > .task.task_larger_percentage .percentage_block:after {
+  content: "%";
+  color: gray;
+  padding-left: 1px;
+}
+.taskWrapper > .task.task_rank {
+  display: none;
+}
+.taskWrapper > .task.task_view {
+  display: none;
+}
+.taskWrapper > .task.task_view > .view_statement {
+  margin-bottom: 10px;
+  padding-top: 10px;
+  display: none;
+  font-size: 1.1em;
+}
+.taskWrapper > .task.task_view > .view_statement > i {
+  font-weight: 500;
+  font-style: normal;
+}
+.taskWrapper > .task.task_view > .explain {
+  font-weight: 200;
+  font-size: 0.9em;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 9px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.taskWrapper > .task.task_view > .explain:hover {
+  color: #ff4500;
+}
+.taskWrapper > .task.task_view[ask="UNI"] > .view_statement_UNI {
+  display: inline-block;
+}
+.taskWrapper > .task.task_view[ask="NORM"] > .view_statement_NORM {
+  display: inline-block;
+}
+.taskWrapper > .task.task_view[ask="LOG"] > .view_statement_LOG {
+  display: inline-block;
+}
+.taskWrapper > .task_info {
+  margin-bottom: 10px;
+  display: block;
+  font-style: italic;
+  text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+#cheater {
+  display: none;
+  position: absolute;
+  margin-left: 20px;
+  margin-top: 20px;
+  color: gray;
+  font-size: 0.8em;
+}
+#cheater:before {
+  content: "Cheat : ";
+  display: block;
+  padding-right: 0px;
+}
+.marked_block {
+  display: inline-block;
+  border-radius: 3px;
+  vertical-align: top;
+  padding: 2px;
+}
+.marked_block:after {
+  text-align: center;
+  font-size: 1.2em;
+}
+.marked_block[highType="1"]:after {
+  color: #017801;
+  content: "\f111";
+}
+.marked_block[highType="2"]:after {
+  color: #910791;
+  content: "\f005";
+}
+.marked_block[selected] {
+  border: solid 2px white;
+  position: relative;
+  top: -3px;
+  left: -3px;
+  box-shadow: 0px 0px 5px black;
+}
+.questionBody {
+  font-size: 1.2em;
+  line-height: 2em;
+}
+.num_by_click {
+  font-size: 1.2em;
+  font-family: Roboto;
+  border: solid 2px gray;
+  display: inline-block;
+  width: 50px;
+  height: 1em;
+  vertical-align: middle;
+  text-align: center;
+  line-height: 1em;
+}
+.percentage_group {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  margin-top: 10px;
+  margin: 0 auto;
+  border-left: solid 1px black;
+  border-right: solid 1px black;
+}
+.percentage_group .percentage_block {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  text-align: center;
+  font-weight: 300;
+  font-size: 0.9em;
+  border-width: 0px 1px;
+  border-style: solid;
+  border-color: black;
+  cursor: pointer;
+  padding: 3px 0px;
+}
+.percentage_group .percentage_block:hover {
+  background-color: #DFDFAE;
+}

@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Chubuk Experiment Responses</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script type="text/javascript" src="http://www.keshif.me/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="http://www.keshif.me/js/d3.3.5.5.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="http://www.keshif.me/keshif.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="http://www.keshif.me/keshif.css"/ type="text/css">
+    <link rel="stylesheet" href="http://www.keshif.me/font-awesome/css/font-awesome.min.css">
+
+    <script type="text/javascript" src="./js/papaparse.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/moment.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript" src="http://www.keshif.me/demo/js/demo.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="http://www.keshif.me/demo/css/demo.css"/ type="text/css">
+
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+
+    <script type="text/javascript">
+
+$(document).ready( function(){
+  browser = new kshf.Browser({
+    domID: "#demo_Browser",
+    categoryTextWidth: 90,
+    rightPanelLabelWidth: 120,
+    barChartWidth: 150,
+    source: {
+      callback: function(browser){
+        $.ajax({
+          url: "./responses.json",
+          async: false,
+          success: function(data){
+            kshf.dt.Responses = [];
+            kshf.dt.Participants = [];
+
+            var rid=0;
+            data.forEach(function(participant){
+              if(participant.responses===undefined) return;
+              kshf.dt.Participants.push(new kshf.Record(participant,"workerId"));
+              participant.responses.forEach(function(response){
+                response.workerId = participant.workerId;
+                response.startTime = participant.startTime;
+                response.setting = participant.setting;
+                response.task = participant.task;
+                response.stimulus = participant.stimulus;
+                response.chart = participant.chart;
+                response.wrong_training = parseInt(participant.wrong_training);
+                response.total_duration = Math.round(participant.endTime/60000);
+                response.id = rid++
+                participant.data_condition = response.rep;
+                kshf.dt.Responses.push(new kshf.Record(response,"id"));
+              });
+            });
+
+            browser.primaryTableName = "Responses";
+            browser.loadCharts();
+          }
+        });
+      }
+    },
+    summaries: [
+      "setting",
+      "chart",
+      "task",
+      { name: "Layout", 
+        value: function(){ if(this.chart!=="TM") return this.LA; },
+        catLabel: function(){ return this.id + " Columns"; },
+        catSortBy: "id"
+      },
+      { name: "Data Size", value: "DS", catLabel: function(){ return this.id + " Records"; }, catSortBy: "id"},
+      { name: "Duration", value: function(){ return this.dur_ms/1000; }, unitName: "s", panel: "bottom", showPercentile: true,
+        intervalScale: "linear"},
+      { name: "Stimulus", value: "stimulus", panel: 'right'},
+      { name: "Worker", panel: "right", collapsed: true,
+        value: function(){ return this.startTime+" * "+this.workerId; },
+        catSortBy: [function(){ return parseInt(this.id); }, {}],
+        catLabel: function(){ return moment(parseInt(this.id)).format("D-ddd HHmm")+"* "+this.id.substring(16,100); } },
+      { name: "Position", value: "pos", panel: "bottom", collapsed: true},
+      { name: "Rank - True Index Perc", unitName: "%", panel: "middle", collapsed: true,
+        value: function(){ return 100*this.trueRank/this.DS; } },
+      { name: "Rank - Abs. Dif. - Norm. [ 100*Abs(rank-trueRank)/DataSize ]", panel: "middle", unitName: "%",
+        value: function(){ if(this.task==="RANK") return 100*Math.abs(this.rank-this.trueRank)/this.DS; }, 
+        showPercentile: true },
+      { name: "Comparison - True Percentage", panel: "middle", unitName: "%",
+        value: function(){ if(this.task==="COMP") return this.truePercent; },
+        catSortBy: "id",
+        catLabel: function(){ return this.id+"%"; } },
+      { name: "Comparison - Difference", panel: "middle", unitName: "%", intervalScale: "linear", showPercentile: true,
+        value: function(){ if(this.task==="COMP") return Math.abs(this.percent-this.truePercent); } },
+      { name: "Training - # of Wrong Responses", value: "wrong_training", collapsed: true, panel: "right", showPercentile: true},
+      { name: "Total Experiment Duration", collapsed: true, panel: "right", unitName: "min"},
+      { name: "Comparison - Larger", panel: "middle",
+        value: function(){ if(this.task==="COMP") return (this.larger===this.trueLarger)?"true":"false"; }},
+/*      { name: "Overview - Match?", panel: 'middle',
+        value: function(){
+          if(this.task!=="VIEW") return;
+          return (this.distr===this.question)?"Match":"Mismatch";
+        } },
+      { name: "Overview - True?", panel: 'middle',
+        value: function(){
+          if(this.task!=="VIEW") return;
+          var v;
+          if(this.distr===this.question) v = this.selection;
+          else v = 6-this.selection;
+          if(v<3) return "False (All)";
+          if(v===3) return "Undecided";
+          return "True (All)";
+        } },
+      { name: "Overview - Correctness", panel: 'middle',
+        value: function(){
+          if(this.task!=="VIEW") return;
+          if(this.distr===this.question) return this.selection;
+          return 6-this.selection;
+        },
+        catSortBy: "id",
+        catLabel: function(){
+          switch(this.id){
+            case 0: return "Strongly False";
+            case 1: return "False";
+            case 2: return "Somewhat False";
+            case 3: return "Undecided";
+            case 4: return "Somewhat True";
+            case 5: return "True";
+            case 6: return "Strongly True";
+          }
+        }
+        },
+      { name: "Overview - Correct distribution", panel: "right",
+        value: function(){ if(this.task==="VIEW") return this.distr; } } */
+    ]
+  });
+});
+
+function printForBootstrap(){
+  var out = [];
+  // RANK
+/*  browser.records.forEach(function(r){ 
+    if(!r.isWanted) return;
+    out.push(r.cachedAggrValues[21].v); 
+  } );*/
+  // COMPARE
+  browser.records.forEach(function(r){ 
+    if(!r.isWanted) return;
+    if(r.cachedAggrValues[24][0].data.id==="false") return; // correctly detected the larger block
+    out.push(r.cachedAggrValues[23].v); 
+  } );
+  var str="a <- c("+out.join(",")+")\n";
+  str+="mean(a)\n";
+  str+="b <- boot(a, function(u,i) mean(u[i]), R = 1000)\n";
+  str+='boot.ci(b, type = c("norm", "basic", "perc", "bca"))\n';
+  console.log(str);
+}
+
+function logtoCSV(){
+  var str="";
+  str="id,task,setting,chart,dur_ms,larger,percent,trueLarger,truePercent,workerId\n";
+  kshf.dt.Responses.forEach(function(response){
+    var d=response.data;
+    if(d.larger){
+      str+=d.id+",";
+      str+=d.task+",";
+      str+=d.setting+",";
+      str+=d.chart+",";
+      str+=d.dur_ms+",";
+      str+=d.larger+",";
+      str+=d.percent+",";
+      str+=d.trueLarger+",";
+      str+=d.truePercent+",";
+      str+=d.workerId+"\n";
+    }
+  });
+};
+
+function logForSAS_comp(setting, stimulus){
+  var str="workerId,chart,data_size,distr,error,responseTime\n";
+
+  kshf.dt.Responses.forEach(function(response){
+    var d=response.data;
+    if(d.task!=="COMP" || d.setting!==setting || d.stimulus!==stimulus) return;
+    str += d.workerId + "," + 
+      d.chart + "," + 
+      d.DS + "," + 
+      d.truePercent + "," +
+      Math.abs(d.percent-d.truePercent) + "," +
+      d.dur_ms+"\n";
+  });
+  return str;
+};
+
+function logForSAS_rank(setting, stimulus){
+  var str="workerId,chart,data_size,true_rank,error,responseTime\n";
+
+  kshf.dt.Responses.forEach(function(response){
+    var d=response.data;
+    if(d.task!=="RANK" || d.setting!==setting || d.stimulus!==stimulus) return;
+    str += d.workerId + "," + 
+      d.chart + "," + 
+      d.DS + "," + 
+      d.rank + "," +
+      100*Math.abs(d.rank-d.trueRank)/d.DS + "," +
+      d.dur_ms+"\n";
+  });
+  return str;
+};
+
+function logForSAS_view(){
+  var str="workerId,chart,data_size,outcome,outcome_true,responseTime\n";
+
+  kshf.dt.Responses.forEach(function(response){
+    var d=response.data;
+    if(d.task!=="VIEW" || d.setting!=="DS") return;
+
+    var v = (d.distr===d.question) ? (d.selection) : (6-d.selection);
+    var outcome = (v<3) ? ("False") : ( (v===3) ? "Undecided" : "True");
+    str += d.workerId + "," + 
+      d.chart + "," + 
+      d.DS + "," + 
+      outcome + "," +
+      ((outcome==="True")?1:0) + "," +
+      d.dur_ms+"\n";
+  });
+  return str;
+};
+// copy(logForSAS('COMP','DS','back'))
+
+</script>
+<style>
+#demo_Browser { max-width:1000px; }
+</style>
+	</head>
+  <body>
+    <div class="contents">
+      <div id="demo_PageTitle">Chubuk Experiment Responses</div>
+      <div id="demo_Browser"></div>
+      </div>
+  </body>
+</html>

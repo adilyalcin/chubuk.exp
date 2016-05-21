@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Crowdsourced Evalation of Information Visualization</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.indigo-pink.min.css">
+<script>
+  function startStudy(){
+    if($('#start-study')[0].getAttribute("disabled")===""){
+      alert("If you wish to start, please review the form and accept (check the box above) to participate.");
+      return;
+    }
+    location.href = "./index.html"+location.search; // Pass all parameters from consent form to the experiment page
+  };
+  function agreeToParticipate(){
+  	if($("#agreeCheckBox")[0].checked){
+  		$("#start-study")[0].removeAttribute("disabled");
+  		$("#start-study").addClass("mdl-color--accent mdl-color-text--accent-contrast");
+  	} else {
+  		$("#start-study")[0].setAttribute("disabled","");
+  		$("#start-study").removeClass("mdl-color--accent mdl-color-text--accent-contrast");
+  	}
+  };
+</script>
+
+<style>
+.demo-ribbon {
+  width: 100%;
+  height: 40vh;
+  background-color: #3F51B5;
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+}
+.demo-main {
+  margin-top: -35vh;
+  flex-shrink: 0;
+}
+.demo-header .mdl-layout__header-row {
+  padding-left: 40px;
+}
+.demo-container {
+  max-width: 1600px;
+  width: calc(100% - 16px);
+  margin: 0 auto;
+}
+.demo-content {
+  border-radius: 2px;
+  padding: 0px 56px 20px 56px;
+}
+.demo-footer {
+  padding-left: 40px;
+}
+.demo-footer .mdl-mini-footer--link-list a {
+  font-size: 13px;
+}
+#start-study {
+  display: block;
+  z-index: 900;
+  width: 100px;
+  margin-top: 20px !important;
+	text-align: center;
+	margin: 0 auto;
+}
+#print-form{
+	display: block;
+	z-index: 900;
+	margin-top: 10px;
+	float: right;
+	font-size: 1em;
+}
+#print-form .material-icons{
+	font-size: 1.2em;
+}
+.icon_eligible{
+  vertical-align: bottom;
+}
+.subContent{
+	padding-left: 35px;
+}
+.subContent .material-icons{
+	font-size: 16px;
+}
+.email_at_umd:after{
+	content: "@umd.edu";
+}
+</style>
+</head>
+<body>
+<div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100" id="FullBody">
+  <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
+    <div class="mdl-layout__header-row">
+      <span class="mdl-layout-title">Informed Consent for Research - Crowdsourced Evalation of Information Visualization</span>
+      <div class="mdl-layout-spacer"></div>
+    </div>
+  </header>
+  <div class="demo-ribbon"></div>
+  <main class="demo-main mdl-layout__content">
+    <div class="demo-container mdl-grid">
+      <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+      <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
+        <h4><i class="material-icons">search</i> The Research - Purpose of the Study</h4>
+          <p>
+	          We invite you to participate in our research study that aims to understand
+            <span style='font-size: 1em; '>how we perceive large amounts of information, and how chart design influences our perception.</span>
+            <!-- What are perceptual factors determine how easy it is to read charts, given different amounts of data and different chart types? -->
+            </p><p>
+          </p>
+        
+        <h4><i class="material-icons">check_circle</i> You are eligible if:</h4>
+        	<div class="subContent">
+          <i class="material-icons icon_eligible">looks_one</i> You have not participated in this study before.<br>
+          <i class="material-icons icon_eligible">language</i> You are fluent in English.<br>
+          <i class="material-icons icon_eligible">location_on</i> You are located in the U.S.<br>
+          <i class="material-icons icon_eligible">people</i> You are at least 18 years old.<br>
+<!--          <i class="material-icons icon_eligible">web</i> You have JavaScript enabled in your browser.<br> -->
+          <i class="material-icons icon_eligible">computer</i> You are using a laptop/desktop computer, not a mobile device.<br>
+          <i class="material-icons icon_eligible">palette</i> You do not have color blindness or color vision deficiency.<br>
+          <i class="material-icons icon_eligible">poll</i> You are comfortable with interpreting charts and graphs.<br>
+          <!--<i class="material-icons icon_eligible">attach_money</i> You do not expect to earn $600 or more as a research participant in University of Maryland College Park studies in this calendar year.<br>-->
+          </div>
+        
+        <h4><i class="material-icons">equalizer</i> What will you do?</h4>
+          <p class="subContent">
+            You will solve questions about fictional data using a number of charts to assist you in making decisions.<br>
+            You will receive the necessary instructions when you start your participation.
+          </p>
+        
+        <h4><i class="material-icons">timelapse</i> How long will the study take?</h4>
+          <p class="subContent">We expect this study to take 5 to 15 minutes, 
+            with a more precise duration given in Amazon Mechanical Turk HIT.
+          </p>
+
+        <h4><i class="material-icons">wb_sunny</i> What are your benefits?</h4>
+        	<p class="subContent">
+        		This research is not designed to benefit you personally.<br>
+            We hope that, in the future, other people might benefit from this study through improved information visualization design.
+            </p>
+        
+        <h4><i class="material-icons">attach_money</i> What is your compensation?</h4>
+          <p class="subContent">
+            You will be paid with the targeted rate of <b>$8 per hour</b> upon successful completion of the experiment.<br>
+            For example, the payment of an expected 
+              5-minute long work is $0.70,
+              10-minute work is $1.35,
+              and 15-minute work is $2.00.<br>
+            Upon completion of the experiment, you will be given the code to claim your compensation on Amazon Mechanical Turk.<br>
+            Your answers may be reviewed to avoid fraudulent and spam answers.<br>
+            </p>
+        
+        <h4><i class="material-icons">trending_up</i> What are your risks?</h4>
+          <p class="subContent">
+            We don't anticipate any risks from participation in this study greater than normal activity.<br>
+            We discuss confidentiality of your participation below.
+          </p>
+
+        <h4><i class="material-icons">live_help</i> How can you contact us?</h4>
+          <p class="subContent">
+          For questions about this research, you can contact the researchers 
+            M. Adil Yalcin (<i class="material-icons">email</i> yalcin<span class='email_at_umd'></span>), or 
+            Niklas Elmqvist (<i class="material-icons">email</i> elm<span class='email_at_umd'></span>).
+          If you are not satisfied with response of the research team, have more questions, or want to talk with someone about your rights as a research participant, you can contact University of Maryland College Park Institutional Review Board Office, 1204 Marie Mount Hall, College Park, Maryland, 20742 - <i class="material-icons">mail</i> irb@umd.edu - <i class="material-icons">phone</i> 301-405-0678.
+          </p>
+        <h4><i class="material-icons">thumb_up</i> How do you consent?</h4>
+        	<p class="subContent">
+        	Your participation in this study is voluntary.<br>
+        	You can withdraw from the study any time without penalty.<br>
+        	If you withdraw prior to completing the study, you will not receive compensation.<br>
+        	</p>
+      	<h4><i class="material-icons">verified_user</i> Data Confidentiality</h4>
+      	  <p class="subContent">
+      	  	Other than your user ID on Amazon Mechanical Turk, we will not collect any personal information from you.<br>
+      	  	Your answers in this study will be recorded and studied by researchers of this study.<br>
+      	  	Any personally identifable information will be kept confidential, and accessible only by the researchers. <br>
+      	    In publications of this research, shared data will be limited to the answers submitted to perceptual tasks, and basic demographic information, if collected.<br>
+      	  </p>
+
+        <h4><i class="material-icons">info_outline</i> How is the study run?</h4>
+        	<p class="subContent">
+        	Do not close or refresh this page during the study.
+        	If you do refresh it, you may lose your progress and become ineligible for this study.<br>
+        	When you click on the "Start" button, the webpage will cover your entire screen.
+        	Please allow this behavior. If the page is not full-screen, please enable full-screen mode of your browser.
+        		(F11 on Windows, ⇧⌘F on Mac OS)
+        	</p>
+
+        <div style="font-size: 1.2em; border-top: solid 1px lightgray; padding-top: 20px;">
+        	<label for="agreeCheckBox" class="mdl-checkbox mdl-js-checkbox" onClick="agreeToParticipate()">
+	         	<input type="checkbox" id="agreeCheckBox" class="mdl-checkbox__input" />
+	         	<span>Clicking this box will indicate that you agree to participate, and that </span>
+         		</label>
+          <ul>
+           	<li>You have read this consent form, </li>
+           	<li>You are eligible to participate in this study, </li>
+           	<li>You have had an opportunity to ask questions about your participation, and </li>
+           	<li>You voluntarily consent to participate.</li>
+           	</ul>
+           </div>
+
+        <a id="start-study" onClick="startStudy()" disabled
+        	class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Start</a>
+
+      	<a id="print-form" href="javascript:window.print()"
+      		class="mdl-button mdl-js-button mdl-js-ripple-effect"><i class="material-icons">print</i> Print this form</a>
+    		
+      </div>
+    </div>
+    <footer class="demo-footer mdl-mini-footer">
+      <div class="mdl-mini-footer--left-section">
+      	<div style='color:lightgray;'>
+      		This research has been reviewed according to the University of Maryland, College Park IRB procedures for research involving human subjects.</div>
+      </div>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

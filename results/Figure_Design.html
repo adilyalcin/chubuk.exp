@@ -1,0 +1,110 @@
+<!-- http://localhost:10090/figA.html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+    <title>Chubuk Demo Page</title><meta charset="utf-8">
+    <script type="text/javascript" src="./js/d3.3.5.5.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!-- Chubuk.js library -->
+    <script type="text/javascript" src="../../chubuk.js/chubuk.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../../chubuk.js/chubuk.css" type="text/css" charset="utf-8">
+
+<script type="text/javascript">
+
+var data=[
+  {Value: 889, Label: "-"},
+  {Value: 700.9079880684096, Label: "-"},
+  {Value: 665.8800929588422, Label: "-"},
+  {Value: 658.2643867255665, Label: "-"},
+  {Value: 643.3198231116028, Label: "-"},
+  {Value: 625.5917741023895, Label: "-"},
+  {Value: 527.0127618532427, Label: "-"},
+  {Value: 504.4002297714085, Label: "-"},
+  {Value: 380.6904722666515, Label: "-"},
+  {Value: 358.4188789552743, Label: "-"},
+  {Value: 318.4188789552743, Label: "-"},
+  {Value: 218.4188789552743, Label: "-"},
+  {Value: 118.4188789552743, Label: "-"},
+  {Value: 102.4188789552743, Label: "-"},
+  {Value: 38.41887895527433, Label: "-"},
+];
+
+$(document).ready( function(){
+  chubuk_1 = new Chubuk({DOM:"#part_1"});
+  chubuk_1.setSize($("#part_1").width(),$("#part_1").height());
+  chubuk_1.setConfig("showgridlines","true");
+  chubuk_1.setConfig("wrappedColumnGap",12);
+  chubuk_1.setConfig("chart_type","long_list");
+  chubuk_1.theData = data;
+  chubuk_1.sortData_decr(true);
+  chubuk_1.insertDOM_Records();
+
+  chubuk_2 = new Chubuk({DOM:"#part_2"});
+  chubuk_2.setSize($("#part_2").width(),$("#part_2").height());
+  chubuk_2.setConfig("chart_type","wrapped_bars");
+  chubuk_2.setConfig("showgridlines","true");
+  chubuk_2.setConfig("wrappedColumnGap",12);
+  chubuk_2.theData = data;
+  chubuk_2.sortData_decr(true);
+  chubuk_2.insertDOM_Records();
+
+  chubuk_2 = new Chubuk({DOM:"#part_3"});
+  chubuk_2.setSize($("#part_3").width(),$("#part_3").height());
+  chubuk_2.setConfig("chart_type","piled_bars");
+  chubuk_2.setConfig("showgridlines","true");
+  chubuk_2.setConfig("wrappedColumnGap",12);
+  chubuk_2.theData = data;
+  chubuk_2.sortData_decr(true);
+  chubuk_2.insertDOM_Records();
+
+  $(".configHeading").click(function(){
+    this.parentNode.setAttribute("active", this.parentNode.getAttribute("active")==="false");
+  })
+});
+
+</script>
+<style type="text/css" media="screen">
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin:0px;
+  padding: 0px;
+}
+#part_1{
+  height: 300px;
+  width: 300px;
+}
+#part_2, #part_3{
+  height: 100px;
+  width: 300px;
+}
+.Chubuk{
+  margin: 0 auto;
+  padding-top: 25px;
+  font-family: 'Roboto', sans-serif;
+}
+.Chubuk > .chartAxis > .scale > .tick > .line {
+  border-left: solid 1px black;
+  z-index: 100;
+}
+.Chubuk > .chartAxis > .scale > .tick[value="0"] > .line {
+  border-left: solid 2px black;
+  left: -1px;
+}
+.configVisiblityButton{ display: none; }
+</style>
+	</head>
+  <body>
+    <div>
+      <div class="Chubuk" id="part_1"><div class="configPanel" active="false"><div class="selectVizType"></div></div></div>
+      </div>
+    <div style="margin-top: 50px;">
+      <div class="Chubuk" id="part_2"><div class="configPanel" active="false"><div class="selectVizType"></div></div></div>
+      </div>
+    <div style="margin-top: 50px;">
+      <div class="Chubuk" id="part_3"><div class="configPanel" active="false"><div class="selectVizType"></div></div></div>
+      </div>
+  </body>
+</html>

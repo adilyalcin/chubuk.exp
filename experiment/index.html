@@ -1,0 +1,909 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Chubuk Experiment</title><meta charset="utf-8">
+
+    <!-- Chubuk resources -->
+    <script type="text/javascript" src="../chubuk.js/js/d3.3.5.5.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../chubuk.js/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../chubuk.js/chubuk.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="../chubuk.js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../chubuk.js/chubuk.css" type="text/css" charset="utf-8">
+
+    <script type="text/javascript" src="./js/bowser.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/js.cookie.js"></script>
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,500,500italic,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="./Experiment.css" type="text/css" charset="utf-8">
+
+<script type="text/javascript">
+
+/**  TODO ******************
+
+Log the highlighted value row/column?
+  - Harder to generate after the fact? maybe not...
+
+- Answer all tasks under all variations
+
+Parameters to this webpage
+- taskType (COMP, RANK, VIEW)
+- setting (DS, LA)
+- chart (TM, WB, PB)
+- workerId
+- force (to bypass checking against the cookie)
+  http://localhost/git/chubuk.exp/experiment.html?workerId=2adkada23&taskType=COMP&setting=DS&chart=PB&force
+  http://localhost/git/chubuk.exp/experiment.html?workerId=2adkada23&taskType=RANK&setting=DS&chart=PB&force
+  http://localhost:10090/experiment.html?taskType=COMP&setting=LA&chart=WB&workerId=2322ss&force
+  http://localhost:10090/experiment.html?taskType=COMP&setting=DS&chart=TM&workerId=2322ss&force
+  http://localhost:10090/exp.html?taskType=RANK&setting=LA&chart=WB&workerId=2322ss&force
+*/
+
+var isFullScreen = false;
+
+function toggleFullscreen(domID, buttonID){
+  if(isFullScreen===false){
+    var elem = $(domID)[0];
+    if(buttonID){
+      if($(buttonID)[0].getAttribute("disabled")==="") {
+        alert("If you wish to start, please review the form and accept (check the box above) to participate.");
+        return;
+      }
+    }
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+    isFullScreen = true;
+  } else{
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+    isFullScreen = false;
+  }
+  $("body").attr("isFullScreen",isFullScreen);
+};
+
+var isComplete = false;
+
+var workerId; // From URL parameter
+var exp_taskType = ''; // COMP , RANK , VIEW
+var exp_setting = ''; // DS or LA
+var chart_type;
+var exp_data_cond = null; // 1,2,3,4 ... 10
+
+var trialFiles = [];
+var currentTrialIndex;
+var curExpTrial = 0;
+var num_training_trials = 0;
+var num_training_begin = 0;
+var wrong_training = 0;
+
+var answers = [];
+
+// Timing
+var expTimeStart = Date.now();
+var jsTickTimer = 0;
+var tickCount;
+var taskTimeStart;
+var curTrial = null;
+
+var sequenceType = null;
+
+// http://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array-in-javascript
+function shuffle(o){
+  for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
+};
+
+function prepareTrials(_tgroup, _setting){
+  exp_taskType = _tgroup;
+  exp_setting = _setting;
+  switch(exp_taskType){
+    case "COMP": case "RANK": case "VIEW": break;
+    default: alert("Task type is not specified. Cannot continue the experiment."); return false;
+  }
+  switch(exp_setting){
+    case "DS": case "LA": break;
+    default: alert("Setting is not specified. Cannot continue the experiment."); return false;
+  }
+
+  trialFiles = [];
+  switch(exp_taskType+"_"+exp_setting){
+    case "COMP_DS":
+      [75, 150, 300].forEach(function(dataSize){
+        [8, 17, 23, 38, 47, 53, 62, 77, 83, 92].forEach(function(truePercentage){
+          trialFiles.push("./trial_datasets/COMP_"+dataSize+"DS_3L_"+truePercentage+"TP.json")
+        });
+      });
+      break;
+    case "COMP_LA":
+      [3, 6, 12].forEach(function(layout){
+        [8, 17, 23, 38, 47, 53, 62, 77, 83, 92].forEach(function(truePercentage){
+          trialFiles.push("./trial_datasets/COMP_75DS_"+layout+"L_"+truePercentage+"TP.json")
+        });
+      });
+      break;
+    case "RANK_DS":
+      [75, 150, 300].forEach(function(dataSize){
+        [8, 17, 23, 38, 47, 53, 62, 77, 83, 92].forEach(function(truePercentage){
+          trialFiles.push("./trial_datasets/RANK_"+dataSize+"DS_3L_"+truePercentage+"TP.json")
+        });
+      });
+      break;
+    case "RANK_LA":
+      [3, 6, 12].forEach(function(layout){
+        [8, 17, 23, 38, 47, 53, 62, 77, 83, 92].forEach(function(truePercentage){
+          trialFiles.push("./trial_datasets/RANK_75DS_"+layout+"L_"+truePercentage+"TP.json")
+        });
+      });
+      break;
+    case "VIEW_DS":
+      // 54 trials
+      [75, 150, 300].forEach(function(dataSize){
+        ["UNI","LOG","NORM"].forEach(function(distr){
+          ["UNI","LOG","NORM"].forEach(function(question){
+            [exp_data_cond].forEach(function(rep){
+              trialFiles.push("./trial_datasets/VIEW_"+dataSize+"DS_3L_"+distr+"_"+question+"_"+rep+".json")
+            });
+          });
+        });
+      });
+      break;
+    case "VIEW_LA":
+      // 54 trials
+      [3, 6, 12].forEach(function(layout){
+        ["UNI","LOG","NORM"].forEach(function(distr){
+          ["UNI","LOG","NORM"].forEach(function(question){
+            [exp_data_cond].forEach(function(rep){
+              trialFiles.push("./trial_datasets/VIEW_75DS_"+layout+"L_"+distr+"_"+question+"_"+rep+".json")
+            });
+          });
+        });
+      });
+      break;
+  }
+
+  $("body").attr("taskType",exp_taskType);
+  shuffle(trialFiles);
+
+  // Add training trials
+  var trainingTrials = [];
+  switch(exp_taskType){
+    case "COMP":
+      trainingTrials.push("./trial_datasets/COMP_TRAINING_10TP.json");
+      trainingTrials.push("./trial_datasets/COMP_TRAINING_30TP.json");
+      trainingTrials.push("./trial_datasets/COMP_TRAINING_50TP.json");
+      trainingTrials.push("./trial_datasets/COMP_TRAINING_70TP.json");
+      trainingTrials.push("./trial_datasets/COMP_TRAINING_90TP.json");
+      break;
+    case "RANK":
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_5TR.json" );
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_15TR.json");
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_25TR.json");
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_35TR.json");
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_45TR.json");
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_55TR.json");
+      trainingTrials.push("./trial_datasets/RANK_TRAINING_65TR.json");
+      break;
+    case "VIEW":
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG.json");
+      break;
+  }
+  shuffle(trainingTrials);
+  num_training_trials = trainingTrials.length;
+  num_training_begin = trainingTrials.length;
+  trialFiles = trainingTrials.concat(trialFiles);
+
+  // Add training trials in between the usual experiments
+  switch(exp_taskType){
+    case "COMP":
+      trialFiles.splice(10+num_training_begin, 0, "./trial_datasets/COMP_TRAINING_10TP.json");
+      trialFiles.splice(21+num_training_begin, 0, "./trial_datasets/COMP_TRAINING_90TP.json");
+      num_training_trials+=2;
+      break;
+    case "RANK":
+      trialFiles.splice(10+num_training_begin, 0, "./trial_datasets/RANK_TRAINING_15TR.json");
+      trialFiles.splice(21+num_training_begin, 0, "./trial_datasets/RANK_TRAINING_55TR.json");
+      num_training_trials+=2;
+      break;
+    case "VIEW":
+      trialFiles.splice(9+num_training_begin, 0, "./trial_datasets/VIEW_TRAIN_UNI.json");
+      trialFiles.splice(19+num_training_begin, 0, "./trial_datasets/VIEW_TRAIN_NORM.json");
+      num_training_trials+=2;
+      break;
+  }
+
+  currentTrialIndex = -1;
+};
+
+function showCompletionCode(completionCode){
+  $("body").attr("complete",true);
+  $(".completion_code").text(completionCode);
+  $(".task[active='true']").attr("active",false);
+  isComplete = true;
+};
+
+var train_distr_ans = {
+  "UNI": "LOG",
+  "LOG": "UNI",
+  "NORM": "NORM"
+};
+
+function addMarks(){
+  // Add marks
+  chubuk.DOM.recordGroup.selectAll(".record[highlight] > .block")
+    .filter(function(d){ return d.highlighted!==undefined; })
+    .append("div").attr("class","theDot")
+      .html(function(d){
+        return "<i class='fa fa-"+(d.highlighted==='opt_1'?'circle':'star')+"'></i>";
+      })
+};
+function refreshMarks(){
+  if(chart_type!=="PB") return;
+  chubuk.DOM.recordGroup.selectAll(".record[highlight] > .block > .theDot")
+    .style("right",function(d){
+      var tipPoint = chubuk.barScale(d.Value);
+      if(d._colOrder===0) return (tipPoint/2-8)+"px";
+      return ((tipPoint - d._gradientPos_2)/2-8)+"px";
+    });
+};
+
+function getNextTrial(){
+  currentTrialIndex++;
+  // If all trials are shown, the experiment is done!
+  if(currentTrialIndex===trialFiles.length){
+    // Generate random code for the participant.
+    var completionCode = "OK";
+    var alphabet = "ABCDEFGHJKMNPRSTUVWXYZ2345689";
+    for(var i=0; i<5; i++){
+      completionCode += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    }
+    Cookies.set('completionCode',completionCode)
+
+    var participantData = {
+      workerId: workerId,
+      completionCode: completionCode,
+      userAgent_name: bowser.name,
+      userAgent_version: bowser.version,
+      startTime: expTimeStart,
+      endTime: Date.now()-expTimeStart,
+      setting: exp_setting,
+      task: exp_taskType,
+      chart: chart_type,
+      wrong_training: wrong_training,
+      answers: answers
+    };
+    console.log(participantData);
+
+    // Convert answers to string representation...
+    participantData.answers = JSON.stringify(participantData.answers);
+
+    $.ajax({
+      url: "./../submit",
+      type: 'POST',
+      data: participantData,
+      success: function(data){ console.log("Thanks"); },
+      error: function(xhr, ajaxOptions, thrownError){ console.log("nope!"); }
+    });;
+
+    showCompletionCode(completionCode);
+    return;
+  }
+
+  var fileName=trialFiles[currentTrialIndex];
+  $.getJSON(fileName, function(data) {
+    // switch from training trial to an experimental trial
+    if(curTrial && currentTrialIndex===num_training_begin){
+      alert(
+        "You completed the training successfully.\n\n"+
+        "You will not be able to change your answers in the rest of the study.\n\n"+
+        "Your time to answer will be measured.\n\n"+
+        "Please answer carefully and quick.");
+    }
+    curTrial = data;
+    chubuk.theData = data.data;
+    chubuk.sortData_decr(true);
+    chubuk.insertDOM_Records();
+
+    $("#rank_mark_large").html(curTrial.dataSize);
+    $(".num_blocks").html(curTrial.dataSize);
+    
+    // Set the number of layouts of the task cobination is on layout
+    if(exp_setting==="LA") chubuk.setNumColumns(curTrial.layout);
+
+    addMarks();
+    refreshMarks();
+    // Comparison task : Randomize the block color order
+    if(exp_taskType==="COMP"){ 
+      var random_assignment = 1+(Math.random()<0.5);
+      $(".task_larger .marked_block.left").attr("highType",random_assignment);
+      $(".task_larger .marked_block.right").attr("highType",random_assignment===1?2:1);
+    }
+
+    $("#cheater").html(fileName);
+    $("body").attr("trainingTrial",curTrial.training===true);
+
+    // Add options
+    var rankingOptions;
+
+    if(curTrial.training){
+      // dataSize can only be 75 records
+      switch(exp_taskType){
+        case "COMP": addOptions_COMP([90,70,50,30,10]); break; // True percentages
+        case "RANK": addOptions_RANK([5,15,25,35,45,55,65]); break; // True rankings
+        case "VIEW": 
+          addOptions_VIEW([ "Disagree", "Agree", ]); 
+          $(".task_view").attr("ask",train_distr_ans[curTrial.distr]);
+          break; // TODO
+      }
+      if(jsTickTimer){ clearInterval(jsTickTimer); }
+      document.getElementById("in_tickTimer").textContent = "Training Trial";
+      document.getElementById("tickTimer").setAttribute("threshold",false);
+      document.getElementById("in_progressIndex").textContent = "Training Trial";
+    } else {
+      curExpTrial++;
+      switch(exp_taskType){
+        case "COMP": 
+          addOptions_COMP([95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5]);
+          break;
+        case "RANK": 
+          // 14 options.
+          // True indices depend on the data size
+          switch(curTrial.dataSize){
+            case 75 : addOptions_RANK([5 ,10,15,20,25 ,30 ,35 ,40 ,45 ,50 ,55 ,60 ,65 ,70 ]); break;
+            case 150: addOptions_RANK([10,20,30,40,50 ,60 ,70 ,80 ,90 ,100,110,120,130,140]); break;
+            case 300: addOptions_RANK([20,40,60,80,100,120,140,160,180,200,220,240,260,280]); break;
+            default: alert("Houston, we have a problem"); return;
+          }
+          break;
+        case "VIEW": 
+          addOptions_VIEW([
+            "Strongly<br>disagree",
+            "Disagree",
+            "Somewhat<br>disagree",
+            "Neither agree<br>or disagree",
+            "Somewhat<br>agree",
+            "Agree",
+            "Strongly<br>agree"
+            ]);
+          $(".task_view").attr("ask",curTrial.question);
+          break;
+      }
+      // Show progress
+      $("#in_progressIndex").text( (curExpTrial)+" / "+(trialFiles.length-num_training_trials));
+      
+      // TASK TIME...
+      taskTimeStart = Date.now();
+      tickCount = 0;
+      if(jsTickTimer){ clearInterval(jsTickTimer); }
+      // reset time counter display
+      document.getElementById("in_tickTimer").textContent = 0;
+      document.getElementById("tickTimer").setAttribute("threshold",false);
+      // Timer updates
+      jsTickTimer = setInterval(function(){
+        document.getElementById("in_tickTimer").textContent = ++tickCount;
+        document.getElementById("tickTimer").setAttribute("threshold", (tickCount>=10) );
+      }, 1000);
+    }
+  });
+};
+
+function createAnswer_Basics(){
+  return {
+    pos: curExpTrial,
+    DS: curTrial.dataSize,
+    LA: curTrial.layout,
+    // trial_fileName: trialFiles[currentTrialIndex],
+    dur_ms: Date.now()-taskTimeStart,
+  };
+};
+
+function applyChartType(){
+  switch(chart_type){
+    case "TM": chubuk.setConfig("chart_type","treemap"); break;
+    case "WB": chubuk.setConfig("chart_type","wrapped_bars"); break;
+    case "PB": chubuk.setConfig("chart_type","piled_bars"); break;
+    default: alert("Chart type is not specified. Cannot continue experiment"); break;
+  }
+  $("body").attr("chart",chart_type);
+};
+
+var QueryString;
+$(document).ready( function(){
+  // http://stackoverflow.com/questions/979975/how-to-get-the-value-from-the-url-parameter
+  QueryString = function () {
+    // This function is anonymous, is executed immediately and 
+    // the return value is assigned to QueryString!
+    var query_string = {};
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+      var pair = vars[i].split("=");
+          // If first entry with this name
+      if (typeof query_string[pair[0]] === "undefined") {
+        query_string[pair[0]] = decodeURIComponent(pair[1]);
+          // If second entry with this name
+      } else if (typeof query_string[pair[0]] === "string") {
+        var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+        query_string[pair[0]] = arr;
+          // If third or later entry with this name
+      } else {
+        query_string[pair[0]].push(decodeURIComponent(pair[1]));
+      }
+    } 
+      return query_string;
+  }();
+
+  if(Cookies.get('workerId')!==undefined && QueryString.force===undefined){
+    var code = Cookies.get('completionCode');
+    if(code){
+      showCompletionCode(code);
+    } else{
+      alert("You have seen this page before. You cannot participate in the experiment again.");
+    }
+    return;
+  }
+
+  workerId = QueryString.workerId;
+  if(workerId===undefined){
+    alert("Participant ID is not specified in the URL. We cannot run the experiment. Sorry!");
+    return;
+  }
+
+  chubuk = new Chubuk();
+  chubuk.setSize($(".chartWrapper").width(),$(".chartWrapper").height());
+  chubuk.setConfig("showTooltip",false);
+  chubuk.setConfig("showGridLines",false);
+
+  chart_type = QueryString.chart;
+
+  if(QueryString.taskType==="VIEW"){
+    exp_data_cond = QueryString.COND;
+    if(exp_data_cond===undefined){
+      alert("You need to define COND parameter...")
+      return;
+    }
+  }
+
+  if(prepareTrials(QueryString.taskType, QueryString.setting)===false) return;
+
+  // Start with animation
+  if(QueryString.ready){ // bypass animation
+    applyChartType();
+    getNextTrial();
+  } else {
+    chubuk.setNumColumns(3);
+    $("body").attr("teach",true);
+    // The animation
+    $.getJSON("./trial_datasets/VIEW_TRAIN_NORM.json", function(data) {
+      curTrial = data;
+      chubuk.setConfig("chart_type","long_list");
+      chubuk.theData = data.data;
+      chubuk.sortData_decr(true);
+      chubuk.insertDOM_Records();
+      addMarks();
+
+      $(".num_blocks").html(curTrial.dataSize);
+      $(".teaching_UNI").css("display","block");
+      sequenceType = "UNI";
+    });
+  }
+  Cookies.set('workerId',workerId);
+
+  // *********************************************************************************
+  // ANIMATION SEQUENCE
+  // *********************************************************************************
+
+  $(".trigger_show_all").click(function(){
+    d3.select(".trigger_show_all").style("display","none");
+    d3.select(".trigger_convert").style("display","none");
+    setTimeout(function(){ d3.select(".trigger_convert").style("display","inline-block"); },6000);
+    scrollChart(900);
+  });
+
+  $(".trigger_convert").click(function(){
+    d3.select(".trigger_show_all").style("display","none");
+    d3.select(".trigger_convert").style("display","none");
+    applyChartType();
+    refreshMarks();
+    setTimeout(function(){ 
+      d3.select(".trigger_long").style("display","inline-block");
+      setTimeout(function(){
+        d3.select(".trigger_continue").style("display","inline-block");
+      }, 1000);
+    }, 1500);
+  });
+
+  $(".trigger_long").click(function(){
+    d3.select(".trigger_long").style("display","none");
+    chubuk.setConfig("chart_type","long_list");
+    setTimeout(function(){
+      d3.select(".trigger_show_all").style("display","inline-block");
+      d3.select(".trigger_convert").style("display","inline-block");
+    }, 1500);
+  });
+
+  $(".trigger_continue").click(function(){
+    d3.select(".trigger_continue").style("display","none");
+    d3.select(".trigger_convert").style("display","none");
+    d3.select(".trigger_long").style("display","none");
+    d3.select(".trigger_show_all").style("display","inline-block");
+
+    switch(sequenceType){
+      case "UNI":
+        sequenceType = "LOG";
+        $.getJSON("./trial_datasets/VIEW_TRAIN_LOG.json", function(data) {
+          curTrial = data;
+          chubuk.setConfig("chart_type","long_list");
+          chubuk.theData = data.data;
+          chubuk.sortData_decr(true);
+          chubuk.insertDOM_Records();
+          addMarks();
+          $(".teaching_text").css("display","none");
+          $(".teaching_LOG").css("display","block");
+        });
+        break;
+      case "LOG":
+        sequenceType = "NORM";
+        $.getJSON("./trial_datasets/VIEW_TRAIN_NORM.json", function(data) {
+          curTrial = data;
+          chubuk.setConfig("chart_type","long_list");
+          chubuk.theData = data.data;
+          chubuk.sortData_decr(true);
+          chubuk.insertDOM_Records();
+          addMarks();
+          $(".teaching_text").css("display","none");
+          $(".teaching_NORM").css("display","block");
+          $(".trigger_continue >.lbl").html("Start Experiment");
+        });
+        break;
+      case "NORM":
+        $("body").attr("teach",false);
+        applyChartType();
+        getNextTrial();
+        break;
+    }
+  });
+
+  // COMPARISON - SELECT THE LARGER BLOCK
+  $(".task_larger .marked_block")
+    .click(function(){
+      this.setAttribute("selected","true");
+      var highType = this.getAttribute("highType");
+      $(".task_larger_percentage").attr("active","true");
+      $(".task_larger_percentage .smaller").attr("highType",highType==="1"?2:1);
+      $(".task_larger_percentage .larger").attr("highType",highType==="1"?1:2);
+      $(".task_larger").attr("answered", "true");
+    });
+
+  // Tooltip for explain button
+  $(".explain")
+    .each(function(){
+      this.tipsy = new Tipsy(this, { gravity: 's', 
+        title: function(){ 
+          switch(train_distr_ans[curTrial.distr]){
+            case "UNI": return "There is a block of all possible sizes.";
+            case "NORM": return "There are more medium-sized blocks than small and large blocks.";
+            case "LOG": return "There are a few blocks that are substantially larger than all the rest.";
+          }
+        }
+      });
+    })
+    .on("mouseenter", function(){ this.tipsy.show(); })
+    .on("mouseleave", function(){ this.tipsy.hide(); });
+
+  // Alert for reload / navigate away
+  window.onbeforeunload = function (e) {
+    if(location.hostname==="localhost") return;
+    if(isComplete) return;
+    var message="By reloading the page, you'll loose your progress and eligiblity to participate in the study.";
+    e = e || window.event;
+    if (e) e.returnValue = message; // For IE and Firefox prior to version 4
+    return message;
+  };
+
+});
+
+function addOptions_COMP(options){
+  var s = d3.select(".task_larger_percentage > .percentage_group");
+  s.selectAll("span.percentage_block").remove();
+  s.selectAll("span.percentage_block").data(options, function(d){return d;} ).enter()
+    .append("span").attr("class","percentage_block")
+    .text(function(d){ return d; })
+    .on("mouseenter",function(){ $(".task_larger_percentage .num_by_click").text(this.textContent); })
+    .on("mouseleave",function(){ $(".task_larger_percentage .num_by_click").text(""); })
+    .on("click",function(){
+      var selectedPercentage = parseInt(this.textContent);
+      var selectedLarger = parseInt($(".marked_block[selected='true']").attr("hightype"));
+      if(curTrial.training){
+        if(selectedLarger!==curTrial.larger || selectedPercentage!==curTrial.truePercentage){
+          wrong_training++;
+          alert("Your answer to this training trial is not correct. Please try again.");
+        } else {
+          //alert("Your answer to this training trial was correct.");
+          getNextTrial();
+        }
+      } else {
+        var answer = createAnswer_Basics();
+        answer.truePercent = curTrial.truePercentage;
+        answer.trueLarger = curTrial.larger;
+        answer.larger = selectedLarger;
+        answer.percent = selectedPercentage;
+        
+        // Add positions of the larger and smaller records
+        chubuk.theData.forEach(function(record){
+
+          if(record.highlighted){
+            if(chart_type==="WB" || chart_type==="PB"){
+              answer[record.highlighted] = {
+                row : record._rowOrder,
+                col : record._colOrder,
+                width: parseFloat(record.DOM.style.width) 
+              }
+            } else { // chart_type===TM
+              answer[record.highlighted] = {
+                x: record.x,
+                y: record.y,
+                dx: record.dx,
+                dy: record.dy
+              }
+            }
+          }
+        });
+
+        answers.push(answer);
+
+        getNextTrial();
+      }
+      // Make the answer block disappear & re-appear as a transition
+      $(".task_larger_percentage").attr("active","false");
+      $(".task_larger").attr("active","false");
+      $(".task_larger").attr("answered","false");
+      $(".task_rank .num_by_click").text("");
+      $(".task_larger .marked_block[selected=true]").removeAttr("selected");
+      setTimeout(function(){ $(".task_larger").attr("active","true"); },400);
+    });;
+};
+
+
+function addOptions_RANK(options){
+  var s = d3.select(".task_rank > .percentage_group");
+  s.selectAll("span.percentage_block").remove();
+  s.selectAll("span.percentage_block").data(options, function(d){return d;} ).enter()
+    .append("span").attr("class","percentage_block")
+    .text(function(d){ return d; })
+    .on("mouseenter",function(){ $(".task_rank .num_by_click").text(this.textContent); })
+    .on("mouseleave",function(){ $(".task_rank .num_by_click").text(""); })
+    .on("click",function(){
+      var selectedRank = parseInt(this.textContent);
+      if(curTrial.training){
+        if(selectedRank!==curTrial.trueRank){
+          wrong_training++;
+          alert("Your answer to training trial is not correct. Please try again.");
+        } else {
+          getNextTrial();
+        }
+      } else {
+        var answer = createAnswer_Basics();
+        answer.trueRank = curTrial.trueRank;
+        answer.rank = parseInt(this.textContent);
+        answers.push(answer);
+
+        getNextTrial();
+      }
+      // Make the answer block disappear & re-appear as a transition
+      $(".task_rank").attr("active","false");
+      $(".task_rank .num_by_click").text("");
+      setTimeout(function(){ $(".task_rank").attr("active","true"); },500);
+    });
+};
+
+function addOptions_VIEW(options){
+  var s = d3.select(".task_view > .percentage_group");
+  s.selectAll("span.percentage_block").remove();
+  s.selectAll("span.percentage_block").data(options, function(d){return d;} ).enter()
+    .append("span").attr("class","percentage_block")
+    .html(function(d){ return d; })
+    .on("click",function(d,i){
+      var label = this.textContent;
+      if(curTrial.training){
+        var match = train_distr_ans[curTrial.distr] === curTrial.distr;
+        if( (match && label==="Disagree") || (!match && label==="Agree") ){
+          wrong_training++;
+          alert("Your answer to training trial is not correct. Please try again.");
+        } else {
+          getNextTrial();
+        }
+      } else {
+        var answer = createAnswer_Basics();
+        answer.selection = i;
+        answer.distr = curTrial.distr;
+        answer.question = curTrial.question
+        answer.rep = curTrial.rep
+        answers.push(answer);
+
+        getNextTrial();
+      }
+      // Make the answer block disappear & re-appear as a transition
+      $(".task_view").attr("active","false");
+      setTimeout(function(){ $(".task_view").attr("active","true"); },500);
+    });
+};
+
+function scrollChart(targetPos){
+  scrollDom = $(".Chubuk .recordGroup")[0];
+  // scroll to top
+  var startTime = null;
+  var scrollInit = scrollDom.scrollTop;
+  var easeFunc = d3.ease('cubic-in-out');
+  var scrollTime = 3000;
+  var animateToTop = function(timestamp){
+    var progress;
+    if(startTime===null) startTime = timestamp;
+    // complete animation in 500 ms
+    progress = (timestamp - startTime)/scrollTime;
+    var m=easeFunc(progress);
+    var v=(1-m)*scrollInit+m*targetPos;
+    $(".Chubuk .recordGroup").scrollTop(v);
+    if(v!==targetPos){
+        window.requestAnimationFrame(animateToTop);
+    } else {
+      if(targetPos===900){
+        scrollChart(0);
+      }
+    }
+  };
+  window.requestAnimationFrame(animateToTop);
+}
+
+</script>
+	</head>
+  <body id='wholePage'>
+    
+    <!-- FULLSCREEN *********************************************** -->
+    <div style="text-align:center; position: fixed; width: 100%; z-index: 500;">
+      <span onclick="toggleFullscreen('#wholePage')" id="fullscreenButton"></span>  
+      </div>
+    
+    <!-- WARNING BLOCKS ******************************************* -->
+    <div class="warning_dont_close warning_left">
+      <span class="fa fa-exclamation-triangle"></span><span class="info_text"> Do not close or refresh.</span>
+      </div>
+    <div class="warning_dont_close warning_right">
+      <span class="info_text">Do not close or refresh. </span><span class="fa fa-exclamation-triangle"></span>
+      </div>
+
+    <!-- THE CHART ************************************************ -->
+    <div style="padding-top: 40px;">
+      <div class="Chubuk">
+        <div class="configPanel" active="false"><div class="selectVizType"></div></div>
+        <div class="rank_mark" id="rank_mark_small">1</div>
+        <div class="rank_mark" id="rank_mark_large"></div>
+        </div>
+      </div>
+
+    <div id="cheater"></div>
+
+    <!-- TASKS **************************************************** -->
+    <div class="taskWrapper">
+      <div id="tickTimer"><span class='fa fa-clock-o'></span><span id="in_tickTimer"></span></div>
+      <div id="progressIndex"><span id="in_progressIndex"></span><span class='fa fa-list'></span></div>
+
+      <span class="task_info">
+        Answer based on your <b>quick</b> and <b>visual</b> judgment as <b>accurately</b> as possible.
+        </span>
+    
+      <span class="task task_larger" active="true" answered="false">
+        <span class="questionBody">The larger block is 
+          <span class="marked_block fa left"></span> 
+          <span class="not_answered"> or </span>
+          <span class="marked_block fa right"></span> 
+          <span class="qmark_or_dot"></span>
+          </span> 
+        <span class="task_helper"><span class="fa fa-arrow-left"></span> Click one</span>
+        </span>
+
+      <span class="task task_larger_percentage">
+        <span class="questionBody">
+          The size of <span class="marked_block fa smaller"></span> is approximately <span class="num_by_click"></span>
+            % of the size of <span class="marked_block fa larger"></span>.</span>
+        <span class="task_helper">
+          <span class="fa fa-arrow-down"></span> Click one
+          </span>
+        <div class="percentage_group"></div>
+        </span>
+
+      <span class="task task_rank" active="true" >
+        <span class="questionBody">
+          The marked block <span class="marked_block fa" hightype="1"></span> is ranked closest to number 
+           <span class="num_by_click"></span> out of <span class="num_blocks"></span> blocks.<br></span>
+        <span class="task_helper" style="margin-bottom: 5px;">
+          <div style="margin-bottom: 5px;">The numbers on the corners describe the ranks of largest and smallest blocks.</div>
+          <span class="fa fa-arrow-down"></span> Click one to answer.
+          </span>
+        <div class="percentage_group"></div>
+        </span>
+
+      <span class="task task_view" active="true" >
+        <span class="view_statement view_statement_UNI">
+          The block sizes have a <i>uniform distribution</i>.
+          </span>
+        <span class="view_statement view_statement_LOG">
+          The block sizes have a <i>skewed distribution</i>.
+          </span>
+        <span class="view_statement view_statement_NORM">
+          The block sizes have a <i>normal distribution</i>.
+          </span>
+          <span class="explain"><span class='fa fa-info-circle'></span> Explanation </span>
+        <div class="percentage_group"></div>
+        </span>
+
+
+    </div> <!--taskWrapper -->
+
+    <div class="teaching_sequence">
+      <div style="color: orangered;">Please read the statements and observe changes carefully.</div>
+      <div class="teaching_text teaching_UNI">
+        <span class='teach_VIEW'>
+          The block sizes have a <i>uniform distribution</i>.<br>
+          There is a block of all possible sizes.
+          </span>
+        <span class='teach_COMP_RANK'>
+          There are 75 blocks in this chart, sorted in decreasing size.<br>
+          Some blocks are highlighted with a mark in the middle of its visible part.
+          </span>
+        </div>  
+      <div class="teaching_text teaching_LOG">
+        <span class='teach_VIEW'>
+          The block sizes have a <i>skewed distribution</i>.<br>
+          There are a few blocks that are substantially larger than all the rest.
+          </span>
+        <span class='teach_COMP_RANK'>
+          There are 75 blocks in this chart, sorted in decreasing size.<br>
+          Some blocks are highlighted with a mark in the middle of its visible part.
+          </span>
+        </div>
+      <div class="teaching_text teaching_NORM">
+        <span class='teach_VIEW'>
+          The block sizes have a <i>normal distribution</i>.<br>
+          There are more medium-sized blocks than small and large blocks.
+          </span>
+        <span class='teach_COMP_RANK'>
+          There are 75 blocks in this chart, sorted in decreasing size.<br>
+          Some blocks are highlighted with a mark in the middle of its visible part.
+          </span>
+        </div>
+      
+      <div class="trigger_button trigger_show_all">Click to see all blocks</span></div>
+      <div class="trigger_button trigger_convert">Click to change chart design</span></div>
+      <div class="trigger_button trigger_long">Click to see long record list again.</div>
+
+      <br><br>
+      <div class="trigger_button trigger_continue">
+        <span class="lbl">Continue</span>
+        <span class='fa fa-arrow-right'></span></div>
+      </div> <!-- teaching_sequence -->
+    
+    <div class="done_message">
+      You answered all the questions.<br><br>
+      Your completion code for Amazon Mechanical Turk is :<br> 
+      <span class="completion_code"></span><br>
+      Please enter the code above in full to mTurk, and submit your HIT.<br><br>
+      Thank you for your participation.
+      </div>
+  </body>
+</html>
