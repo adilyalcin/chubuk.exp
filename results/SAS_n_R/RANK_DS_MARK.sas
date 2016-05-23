@@ -14,4 +14,5 @@ PROC mixed data = Expdata;
     random intercept / sub = workerId;
     lsmeans chart / pdiff adjust = tukey;
     lsmeans data_size / pdiff adjust = tukey;
+    lsmeans chart * data_size / pdiff adjust = tukey;
 run;
