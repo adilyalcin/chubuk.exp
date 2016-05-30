@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Chubuk.JS Experiment Data</title><meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css">
+    <script type="text/javascript" src="./experiment/js/jquery-2.2.4.min.js"></script>
+
+    <link rel="stylesheet" href="./experiment/font-awesome/css/font-awesome.min.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,500,500italic,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+<script>
+
+/*
+  Stimulus options
+  - With background stimulus, do not show the initial training
+*/
+
+$(document).ready( function(){
+  $("#do_Experiment").on("click",function(){
+    window.open(
+        "./experiment/index.html?workerId=X&force&"+
+        "taskType=" + $("#exp_taskType").val()+
+        "&setting=" + $("#exp_setting").val()+
+        "&chart="   + $("#exp_chart").val()+
+        "&stim="    + $("#exp_stim").val()+
+        "&COND="    + Math.ceil(Math.random()*10), // used only for overview, 10 different chart conditions
+        '_blank');
+  });
+
+  $("#exp_taskType").on("change",function(){
+    $("#exp_stim").css("display", ($("#exp_taskType").val()==="COMP") ? "inline-block" : "none" );
+  });
+});
+
+</script>
+
+<style type="text/css" media="screen">
+html, body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin:0px;
+  padding: 0px;
+}
+.Chubuk{
+  height: 500px;
+  margin: 0 auto;
+  padding-top: 25px;
+}
+.indexHeader{
+  padding: 1em 0em 0em 1em;
+  background-color: rgb(246, 247, 242);
+  box-shadow: 0px 0px 1em #D6D8CE;
+}
+
+.affilLogoFilter{
+  margin-left: 10px;
+  -webkit-filter: grayscale(100%);
+     -moz-filter: grayscale(100%);
+       -o-filter: grayscale(100%);
+      -ms-filter: grayscale(100%);
+          filter: grayscale(100%);
+}
+.affilLogoFilter:hover{
+  -webkit-filter: grayscale(0%);
+     -moz-filter: grayscale(0%);
+       -o-filter: grayscale(0%);
+      -ms-filter: grayscale(0%);
+          filter: grayscale(0%);
+}
+
+#logo_umd{
+  width: 50px;
+}
+#logo_cs{
+  background: url('http://www.keshif.me/demo/img/umd_cs_white.png');
+  background-size: 41px 50px;
+  height: 50px;
+  width: 41px;
+  display: inline-block;
+}
+#logo_cs:hover{
+  background: url('http://www.keshif.me/demo/img/umd_cs_black.png');
+  background-size: 41px 50px;
+}
+#logo_hcil{
+  width: 50px;
+}
+</style>
+	</head>
+  <body>
+  <div class="container">
+
+    <div class="row indexHeader" >
+      <div class="four columns">
+        <h1>chubuk.exp</h1>  
+        </div>
+      <div class="eight columns">
+        <h5 style='font-size: 1.4em'>Experiment data and results for 
+          <a href='http://www.adilyalcin.me/chubuk.js' target='_blank'>chubuk.js</a></h5>  
+        </div>
+      </div>
+
+    <div class="row" style='margin: 2em 0em 2em 0em;'>
+      <div class="five columns">
+        <h4>Paper Figures &amp; Results</h4>
+        <ul>
+          <li><a target='_blank' href="./results/ResultsBrowser.html">Response browser using Keshif</a></li>
+          <li><a target='_blank' href="./results/Figure_Votes.html">Figure Votes</a></li>
+          <li><a target='_blank' href="./results/ResultsFigures.html">Result Figures</a></li>
+        </ul>
+        </div>
+      <div class="seven columns">
+        <h4>Experiments</h4>
+        <select id='exp_setting' style='font-weight: 700;'>
+          <option value="DS">Data Density</option>
+          <option value="LA">Chart Layout</option>
+          </select>
+        <select id='exp_taskType' style='font-weight: 700;'>
+          <option value="COMP">Comparison</option>
+          <option value="RANK">Ranking</option>
+          <option value="VIEW">Overview</option>
+          </select>
+        <select id='exp_chart' style='font-weight: 700;'>
+          <option value="TM">Treemaps</option>
+          <option value="WB">Wrapped Bars</option>
+          <option value="PB">Piled Bars</option>
+          </select>
+        <select id='exp_stim' style='font-weight: 100;'>
+          <option value="MARK">Stimulus: Mark</option>
+          <option value="BACK">Stimulus: Background</option>
+          </select><br>
+        <button class="button-primary" id="do_Experiment">Do the Experiment</button>
+        </div>
+    </div>
+
+    <div class="row" style='margin: 1em;'>
+      <div class="three columns">
+        <h3 style='margin-bottom: 10px;'>Contact</h3>
+        M. Adil Yalcin (<a href='http://www.adilyalcin.me' target='_blank'>adilyalcin.me</a>)
+        </div>
+      <div class="six columns">
+        <h3 style='margin-bottom: 10px;'>License</h3>
+        Released under 
+        <a href='https://github.com/adilyalcin/chubuk.js/blob/gh-pages/LICENSE' target='_blank'>BSD license</a>
+        <i class='fa fa-copyright'></i>  2016 University of Maryland
+        </div>
+      <div class="three columns affiliations" style='text-align: right;'>
+        <a href="http://www.umd.edu" target="_blank">
+          <img src="http://www.keshif.me/AggreSet/img/logo_umd.png" id="logo_umd" class="affilLogo affilLogoFilter" title="University of Maryland, College Park"></a>
+        <a href="http://www.cs.umd.edu" target="_blank">
+          <span id="logo_cs" class="affilLogo" title="Computer Science Department"></span></a>
+        <a href="http://www.cs.umd.edu/hcil" target="_blank">
+          <img src="http://www.keshif.me/AggreSet/img/logo_hcil.gif" id="logo_hcil" class="affilLogo affilLogoFilter" title="Human Computer Interaction Lab"></a>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

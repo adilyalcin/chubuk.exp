@@ -9,6 +9,9 @@ html, body {
   background-color: white;
 }
 
+@color_stim_1: #017801;
+@color_stim_2: #910791;
+
 .Chubuk{
   height: 450px;
   width: 800px;
@@ -26,8 +29,8 @@ html, body {
       top: calc(~"50% - 8px");
       left: calc(~"50% - 6px");
     }
-    &[highlight="opt_1"] .theDot{ color: #017801; }
-    &[highlight="opt_2"] .theDot{ color: #910791; }
+    &[highlight="opt_1"] .theDot{ color: @color_stim_1; }
+    &[highlight="opt_2"] .theDot{ color: @color_stim_2; }
   }
 
   &[chart_type="piled_bars"]{
@@ -39,6 +42,20 @@ html, body {
   }
   .configPanel{ display: none;  }
   > .chartAxis > .scale > .tick > .text{ display: none; }
+
+}
+[stimulus="BACK"]{
+  .Chubuk[chart_type="piled_bars"]{
+    .record[highlight] > .block { border-width: 3px; border-style: solid; }
+    .record[highlight="opt_1"] > .block { border-color: @color_stim_1 !important; }
+    .record[highlight="opt_2"] > .block { border-color: @color_stim_2 !important; }
+  }
+  .Chubuk:not([chart_type="piled_bars"]){
+    .record[highlight="opt_1"] > .block { background-color: @color_stim_1 !important; }
+    .record[highlight="opt_2"] > .block { background-color: @color_stim_2 !important; }
+  }
+
+  .marked_block:after{ content: "\f0c8" !important; }// Square
 }
 
 .rank_mark{
@@ -386,13 +403,13 @@ body{
   }
   &[highType="1"]{
     &:after{ 
-      color: #017801;
+      color: @color_stim_1;
       content: "\f111"; // Star
     } 
   }
   &[highType="2"]{
     &:after{
-      color: #910791;
+      color: @color_stim_2;
       content: "\f005";  // Circle
     }
   }

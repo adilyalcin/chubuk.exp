@@ -67,38 +67,43 @@ $(document).ready( function(){
       { name: "Layout", 
         value: function(){ if(this.chart!=="TM") return this.LA; },
         catLabel: function(){ return this.id + " Columns"; },
-        catSortBy: "id"
-      },
+        catSortBy: "id" },
       { name: "Data Size", value: "DS", catLabel: function(){ return this.id + " Records"; }, catSortBy: "id"},
-      { name: "Duration", value: function(){ return this.dur_ms/1000; }, unitName: "s", panel: "bottom", showPercentile: true,
-        intervalScale: "linear"},
-      { name: "Stimulus", value: "stimulus", panel: 'right'},
-      { name: "Worker", panel: "right", collapsed: true,
+      { name: "Stimulus", value: "stimulus", panel: 'left'},
+      { name: "Worker", panel: "left", collapsed: true,
         value: function(){ return this.startTime+" * "+this.workerId; },
         catSortBy: [function(){ return parseInt(this.id); }, {}],
         catLabel: function(){ return moment(parseInt(this.id)).format("D-ddd HHmm")+"* "+this.id.substring(16,100); } },
+
+      { name: "Time", collapsed: true, unitName: "s", panel: "bottom", showPercentile: true, 
+        value: function(){ return this.dur_ms/1000; }, 
+        intervalScale: "linear" },
+
       { name: "Position", value: "pos", panel: "bottom", collapsed: true},
-      { name: "Rank - True Index Perc", unitName: "%", panel: "middle", collapsed: true,
-        value: function(){ return 100*this.trueRank/this.DS; } },
-      { name: "Rank - Abs. Dif. - Norm. [ 100*Abs(rank-trueRank)/DataSize ]", panel: "middle", unitName: "%",
-        value: function(){ if(this.task==="RANK") return 100*Math.abs(this.rank-this.trueRank)/this.DS; }, 
-        showPercentile: true },
+      
       { name: "Comparison - True Percentage", panel: "middle", unitName: "%",
         value: function(){ if(this.task==="COMP") return this.truePercent; },
         catSortBy: "id",
         catLabel: function(){ return this.id+"%"; } },
       { name: "Comparison - Difference", panel: "middle", unitName: "%", intervalScale: "linear", showPercentile: true,
         value: function(){ if(this.task==="COMP") return Math.abs(this.percent-this.truePercent); } },
+      
+      { name: "Rank - True Index Perc", unitName: "%", panel: "middle", collapsed: true,
+        value: function(){ return 100*this.trueRank/this.DS; } },
+      { name: "Rank - Abs. Dif. - Norm. [ 100*Abs(rank-trueRank)/DataSize ]", panel: "middle", unitName: "%",
+        value: function(){ if(this.task==="RANK") return 100*Math.abs(this.rank-this.trueRank)/this.DS; }, 
+        showPercentile: true },
+      
       { name: "Training - # of Wrong Responses", value: "wrong_training", collapsed: true, panel: "right", showPercentile: true},
       { name: "Total Experiment Duration", collapsed: true, panel: "right", unitName: "min"},
       { name: "Comparison - Larger", panel: "middle",
         value: function(){ if(this.task==="COMP") return (this.larger===this.trueLarger)?"true":"false"; }},
-/*      { name: "Overview - Match?", panel: 'middle',
+      { name: "Overview - Match?", panel: 'right',
         value: function(){
           if(this.task!=="VIEW") return;
           return (this.distr===this.question)?"Match":"Mismatch";
         } },
-      { name: "Overview - True?", panel: 'middle',
+      { name: "Overview - True?", panel: 'right',
         value: function(){
           if(this.task!=="VIEW") return;
           var v;
@@ -108,7 +113,7 @@ $(document).ready( function(){
           if(v===3) return "Undecided";
           return "True (All)";
         } },
-      { name: "Overview - Correctness", panel: 'middle',
+      { name: "Overview - Correctness", panel: 'right',
         value: function(){
           if(this.task!=="VIEW") return;
           if(this.distr===this.question) return this.selection;
@@ -128,7 +133,7 @@ $(document).ready( function(){
         }
         },
       { name: "Overview - Correct distribution", panel: "right",
-        value: function(){ if(this.task==="VIEW") return this.distr; } } */
+        value: function(){ if(this.task==="VIEW") return this.distr; } }
     ]
   });
 });

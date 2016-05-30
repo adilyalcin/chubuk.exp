@@ -43,6 +43,25 @@ body {
 .Chubuk > .chartAxis > .scale > .tick > .text {
   display: none;
 }
+[stimulus="BACK"] .Chubuk[chart_type="piled_bars"] .record[highlight] > .block {
+  border-width: 3px;
+  border-style: solid;
+}
+[stimulus="BACK"] .Chubuk[chart_type="piled_bars"] .record[highlight="opt_1"] > .block {
+  border-color: #017801 !important;
+}
+[stimulus="BACK"] .Chubuk[chart_type="piled_bars"] .record[highlight="opt_2"] > .block {
+  border-color: #910791 !important;
+}
+[stimulus="BACK"] .Chubuk:not([chart_type="piled_bars"]) .record[highlight="opt_1"] > .block {
+  background-color: #017801 !important;
+}
+[stimulus="BACK"] .Chubuk:not([chart_type="piled_bars"]) .record[highlight="opt_2"] > .block {
+  background-color: #910791 !important;
+}
+[stimulus="BACK"] .marked_block:after {
+  content: "\f0c8" !important;
+}
 .rank_mark {
   display: none;
   position: absolute;

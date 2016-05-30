@@ -3,12 +3,14 @@
 	<head>
 		<title>Chubuk Experiment</title><meta charset="utf-8">
 
+    <script type="text/javascript" src="./js/d3.3.5.5.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+
     <!-- Chubuk resources -->
-    <script type="text/javascript" src="../chubuk.js/js/d3.3.5.5.min.js" charset="utf-8"></script>
-    <script type="text/javascript" src="../chubuk.js/js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="../chubuk.js/chubuk.js" charset="utf-8"></script>
-    <link rel="stylesheet" href="../chubuk.js/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../chubuk.js/chubuk.css" type="text/css" charset="utf-8">
+    <script type="text/javascript" src="./chubuk.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="./chubuk.css" type="text/css" charset="utf-8">
+
+    <link rel="stylesheet" href="./font-awesome/css/font-awesome.min.css">
 
     <script type="text/javascript" src="./js/bowser.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/js.cookie.js"></script>
@@ -19,24 +21,15 @@
 
 <script type="text/javascript">
 
-/**  TODO ******************
-
-Log the highlighted value row/column?
-  - Harder to generate after the fact? maybe not...
-
-- Answer all tasks under all variations
-
-Parameters to this webpage
+/**
+Experiment Parameters:
 - taskType (COMP, RANK, VIEW)
 - setting (DS, LA)
 - chart (TM, WB, PB)
+- stim (BACK, MARK)
 - workerId
 - force (to bypass checking against the cookie)
-  http://localhost/git/chubuk.exp/experiment.html?workerId=2adkada23&taskType=COMP&setting=DS&chart=PB&force
-  http://localhost/git/chubuk.exp/experiment.html?workerId=2adkada23&taskType=RANK&setting=DS&chart=PB&force
-  http://localhost:10090/experiment.html?taskType=COMP&setting=LA&chart=WB&workerId=2322ss&force
-  http://localhost:10090/experiment.html?taskType=COMP&setting=DS&chart=TM&workerId=2322ss&force
-  http://localhost:10090/exp.html?taskType=RANK&setting=LA&chart=WB&workerId=2322ss&force
+  http://localhost/git/chubuk.exp/index.html?workerId=X&taskType=COMP&setting=DS&chart=PB&force
 */
 
 var isFullScreen = false;
@@ -75,12 +68,11 @@ function toggleFullscreen(domID, buttonID){
   $("body").attr("isFullScreen",isFullScreen);
 };
 
-var isComplete = false;
-
-var workerId; // From URL parameter
-var exp_taskType = ''; // COMP , RANK , VIEW
-var exp_setting = ''; // DS or LA
-var chart_type;
+var workerId;
+var exp_taskType = ''; // COMP / RANK / VIEW
+var exp_setting = ''; // DS / LA
+var chart_type = ''; // TM / WB/ PB
+var stimulus = 'MARK'; // BACK / MARK
 var exp_data_cond = null; // 1,2,3,4 ... 10
 
 var trialFiles = [];
@@ -89,6 +81,8 @@ var curExpTrial = 0;
 var num_training_trials = 0;
 var num_training_begin = 0;
 var wrong_training = 0;
+
+var isComplete = false;
 
 var answers = [];
 
@@ -244,6 +238,7 @@ var train_distr_ans = {
 };
 
 function addMarks(){
+  if(stimulus==="BACK") return;
   // Add marks
   chubuk.DOM.recordGroup.selectAll(".record[highlight] > .block")
     .filter(function(d){ return d.highlighted!==undefined; })
@@ -252,7 +247,9 @@ function addMarks(){
         return "<i class='fa fa-"+(d.highlighted==='opt_1'?'circle':'star')+"'></i>";
       })
 };
+
 function refreshMarks(){
+  if(stimulus==="BACK") return;
   if(chart_type!=="PB") return;
   chubuk.DOM.recordGroup.selectAll(".record[highlight] > .block > .theDot")
     .style("right",function(d){
@@ -264,6 +261,7 @@ function refreshMarks(){
 
 function getNextTrial(){
   currentTrialIndex++;
+
   // If all trials are shown, the experiment is done!
   if(currentTrialIndex===trialFiles.length){
     // Generate random code for the participant.
@@ -272,7 +270,7 @@ function getNextTrial(){
     for(var i=0; i<5; i++){
       completionCode += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
     }
-    Cookies.set('completionCode',completionCode)
+    Cookies.set('completionCode',completionCode);
 
     var participantData = {
       workerId: workerId,
@@ -282,6 +280,7 @@ function getNextTrial(){
       startTime: expTimeStart,
       endTime: Date.now()-expTimeStart,
       setting: exp_setting,
+      stimulus: stimulus,
       task: exp_taskType,
       chart: chart_type,
       wrong_training: wrong_training,
@@ -289,7 +288,6 @@ function getNextTrial(){
     };
     console.log(participantData);
 
-    // Convert answers to string representation...
     participantData.answers = JSON.stringify(participantData.answers);
 
     $.ajax({
@@ -471,6 +469,10 @@ $(document).ready( function(){
 
   chart_type = QueryString.chart;
 
+  stimulus = QueryString.stim || "MARK";
+
+  $("body").attr("stimulus",stimulus);
+
   if(QueryString.taskType==="VIEW"){
     exp_data_cond = QueryString.COND;
     if(exp_data_cond===undefined){
@@ -481,14 +483,16 @@ $(document).ready( function(){
 
   if(prepareTrials(QueryString.taskType, QueryString.setting)===false) return;
 
-  // Start with animation
-  if(QueryString.ready){ // bypass animation
+  if(QueryString.ready || stimulus==="BACK"){
+    // bypass animation
     applyChartType();
     getNextTrial();
+
   } else {
+    // Start with animation
     chubuk.setNumColumns(3);
     $("body").attr("teach",true);
-    // The animation
+
     $.getJSON("./trial_datasets/VIEW_TRAIN_NORM.json", function(data) {
       curTrial = data;
       chubuk.setConfig("chart_type","long_list");
@@ -496,11 +500,11 @@ $(document).ready( function(){
       chubuk.sortData_decr(true);
       chubuk.insertDOM_Records();
       addMarks();
-
       $(".num_blocks").html(curTrial.dataSize);
       $(".teaching_UNI").css("display","block");
       sequenceType = "UNI";
     });
+
   }
   Cookies.set('workerId',workerId);
 
@@ -851,7 +855,6 @@ function scrollChart(targetPos){
           <span class="explain"><span class='fa fa-info-circle'></span> Explanation </span>
         <div class="percentage_group"></div>
         </span>
-
 
     </div> <!--taskWrapper -->
 
