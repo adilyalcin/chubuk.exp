@@ -21,7 +21,7 @@
 $(document).ready( function(){
   $("#do_Experiment").on("click",function(){
     window.open(
-        "./experiment/index.html?workerId=X&force&"+
+        "./experiment/index.html?workerId=X&force&"+ // use consent.html to get consent
         "taskType=" + $("#exp_taskType").val()+
         "&setting=" + $("#exp_setting").val()+
         "&chart="   + $("#exp_chart").val()+
@@ -31,7 +31,7 @@ $(document).ready( function(){
   });
 
   $("#exp_taskType").on("change",function(){
-    $("#exp_stim").css("display", ($("#exp_taskType").val()==="COMP") ? "inline-block" : "none" );
+    $("#exp_header_stimulus").css("display", ($("#exp_taskType").val()==="COMP") ? "block" : "none" );
   });
 });
 
@@ -54,6 +54,10 @@ html, body {
   padding: 1em 0em 0em 1em;
   background-color: rgb(246, 247, 242);
   box-shadow: 0px 0px 1em #D6D8CE;
+}
+.exp_header{
+  display: inline-block;
+  width: 70px;
 }
 
 .affilLogoFilter{
@@ -105,35 +109,57 @@ html, body {
       </div>
 
     <div class="row" style='margin: 2em 0em 2em 0em;'>
-      <div class="five columns">
+      <div class="six columns">
         <h4>Paper Figures &amp; Results</h4>
         <ul>
           <li><a target='_blank' href="./results/ResultsBrowser.html">Response browser using Keshif</a></li>
           <li><a target='_blank' href="./results/Figure_Votes.html">Figure Votes</a></li>
           <li><a target='_blank' href="./results/ResultsFigures.html">Result Figures</a></li>
+          
+          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/COMP_DS_BACK-results.pdf">
+            Stat-Analysis: Comparison - Stimulus: Background</a>
+            <i class='fa fa-file-pdf-o'></i>
+            </li>
+          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/COMP_DS_MARK-results.pdf">
+            Stat-Analysis: Comparison - Stimulus: Mark</a>
+            <i class='fa fa-file-pdf-o'></i>
+            </li>
+          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/RANK_DS_MARK-results.pdf">
+            Stat-Analysis: Ranking</a>
+            <i class='fa fa-file-pdf-o'></i>
+            </li>
+          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/OVERVIEW-results.pdf">
+            Stat-Analysis: Distribution Overview</a>
+            <i class='fa fa-file-pdf-o'></i>
+            </li>
+
+          
         </ul>
         </div>
-      <div class="seven columns">
+      <div class="six columns">
         <h4>Experiments</h4>
-        <select id='exp_setting' style='font-weight: 700;'>
+        <span class='exp_header'>Setting:</span> <select id='exp_setting' style='font-weight: 700;'>
           <option value="DS">Data Density</option>
           <option value="LA">Chart Layout</option>
-          </select>
-        <select id='exp_taskType' style='font-weight: 700;'>
+          </select><br>
+        <span class='exp_header'>Task:</span> <select id='exp_taskType' style='font-weight: 700;'>
           <option value="COMP">Comparison</option>
           <option value="RANK">Ranking</option>
           <option value="VIEW">Overview</option>
-          </select>
-        <select id='exp_chart' style='font-weight: 700;'>
+          </select><br>
+        <span class='exp_header'>Chart:</span> <select id='exp_chart' style='font-weight: 700;'>
           <option value="TM">Treemaps</option>
           <option value="WB">Wrapped Bars</option>
           <option value="PB">Piled Bars</option>
-          </select>
-        <select id='exp_stim' style='font-weight: 100;'>
-          <option value="MARK">Stimulus: Mark</option>
-          <option value="BACK">Stimulus: Background</option>
           </select><br>
-        <button class="button-primary" id="do_Experiment">Do the Experiment</button>
+        <div id='exp_header_stimulus'>
+          <span class='exp_header'>Stimulus:</span> <select id='exp_stim' style='font-weight: 100;'>
+            <option value="MARK">Mark</option>
+            <option value="BACK">Background</option>
+            </select>
+          </div>
+        <button class="button-primary" id="do_Experiment">Try the Experiment</button><br>
+          (Note: Data is not recorded)
         </div>
     </div>
 
