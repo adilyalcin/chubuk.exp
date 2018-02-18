@@ -415,6 +415,8 @@ function applyChartType(){
     case "TM": chubuk.setConfig("chart_type","treemap"); break;
     case "WB": chubuk.setConfig("chart_type","wrapped_bars"); break;
     case "PB": chubuk.setConfig("chart_type","piled_bars"); break;
+    case "ZP": chubuk.setConfig("chart_type","zvinca_plot"); break;
+    case "KB": chubuk.setConfig("chart_type","packed_bars"); break;
     default: alert("Chart type is not specified. Cannot continue experiment"); break;
   }
   $("body").attr("chart",chart_type);
@@ -483,7 +485,7 @@ $(document).ready( function(){
 
   if(prepareTrials(QueryString.taskType, QueryString.setting)===false) return;
 
-  if(QueryString.ready || stimulus==="BACK"){
+  if(QueryString.ready || stimulus==="BACK" || stimulus==="MARK"){
     // bypass animation
     applyChartType();
     getNextTrial();
