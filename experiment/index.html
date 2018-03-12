@@ -23,7 +23,7 @@
 
 /**
 Experiment Parameters:
-- taskType (COMP, RANK, VIEW)
+- taskType (COMP, RANK, VIEW, MEAN)
 - setting (DS, LA)
 - chart (TM, WB, PB)
 - stim (BACK, MARK)
@@ -90,7 +90,7 @@ var answers = [];
 var expTimeStart = Date.now();
 var jsTickTimer = 0;
 var tickCount;
-var taskTimeStart;
+var taskTimeStart, timeMid = 0;
 var curTrial = null;
 
 var sequenceType = null;
@@ -105,7 +105,7 @@ function prepareTrials(_tgroup, _setting){
   exp_taskType = _tgroup;
   exp_setting = _setting;
   switch(exp_taskType){
-    case "COMP": case "RANK": case "VIEW": break;
+    case "COMP": case "RANK": case "VIEW": case "MEAN": break;
     default: alert("Task type is not specified. Cannot continue the experiment."); return false;
   }
   switch(exp_setting){
@@ -143,7 +143,7 @@ function prepareTrials(_tgroup, _setting){
         });
       });
       break;
-    case "VIEW_DS":
+    /*case "VIEW_DS":
       // 54 trials
       [75, 150, 300].forEach(function(dataSize){
         ["UNI","LOG","NORM"].forEach(function(distr){
@@ -156,6 +156,30 @@ function prepareTrials(_tgroup, _setting){
       });
       break;
     case "VIEW_LA":
+      // 54 trials
+      [3, 6, 12].forEach(function(layout){
+        ["UNI","LOG","NORM"].forEach(function(distr){
+          ["UNI","LOG","NORM"].forEach(function(question){
+            [exp_data_cond].forEach(function(rep){
+              trialFiles.push("./trial_datasets/VIEW_75DS_"+layout+"L_"+distr+"_"+question+"_"+rep+".json")
+            });
+          });
+        });
+      });
+      break;*/
+    case "MEAN_DS":
+      // 54 trials
+      [75, 150, 300].forEach(function(dataSize){
+        ["UNI","LOG","NORM"].forEach(function(distr){
+          ["UNI","LOG","NORM"].forEach(function(question){
+            [exp_data_cond].forEach(function(rep){
+              trialFiles.push("./trial_datasets/VIEW_"+dataSize+"DS_3L_"+distr+"_"+question+"_"+rep+".json")
+            });
+          });
+        });
+      });
+      break;
+    case "MEAN_LA":
       // 54 trials
       [3, 6, 12].forEach(function(layout){
         ["UNI","LOG","NORM"].forEach(function(distr){
@@ -191,7 +215,12 @@ function prepareTrials(_tgroup, _setting){
       trainingTrials.push("./trial_datasets/RANK_TRAINING_55TR.json");
       trainingTrials.push("./trial_datasets/RANK_TRAINING_65TR.json");
       break;
-    case "VIEW":
+   /* case "VIEW":
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG.json");
+      break;*/
+    case "MEAN":
       trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI.json");
       trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM.json");
       trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG.json");
@@ -214,7 +243,12 @@ function prepareTrials(_tgroup, _setting){
       trialFiles.splice(21+num_training_begin, 0, "./trial_datasets/RANK_TRAINING_55TR.json");
       num_training_trials+=2;
       break;
-    case "VIEW":
+   /* case "VIEW":
+      trialFiles.splice(9+num_training_begin, 0, "./trial_datasets/VIEW_TRAIN_UNI.json");
+      trialFiles.splice(19+num_training_begin, 0, "./trial_datasets/VIEW_TRAIN_NORM.json");
+      num_training_trials+=2;
+      break;*/
+    case "MEAN":
       trialFiles.splice(9+num_training_begin, 0, "./trial_datasets/VIEW_TRAIN_UNI.json");
       trialFiles.splice(19+num_training_begin, 0, "./trial_datasets/VIEW_TRAIN_NORM.json");
       num_training_trials+=2;
@@ -343,10 +377,11 @@ function getNextTrial(){
       switch(exp_taskType){
         case "COMP": addOptions_COMP([90,70,50,30,10]); break; // True percentages
         case "RANK": addOptions_RANK([5,15,25,35,45,55,65]); break; // True rankings
-        case "VIEW": 
+        /*case "VIEW": 
           addOptions_VIEW([ "Disagree", "Agree", ]); 
           $(".task_view").attr("ask",train_distr_ans[curTrial.distr]);
-          break; // TODO
+          break; // TODO*/
+        case "MEAN": addOptions_MEAN(); break;
       }
       if(jsTickTimer){ clearInterval(jsTickTimer); }
       document.getElementById("in_tickTimer").textContent = "Training Trial";
@@ -368,7 +403,7 @@ function getNextTrial(){
             default: alert("Houston, we have a problem"); return;
           }
           break;
-        case "VIEW": 
+     /*   case "VIEW": 
           addOptions_VIEW([
             "Strongly<br>disagree",
             "Disagree",
@@ -379,6 +414,10 @@ function getNextTrial(){
             "Strongly<br>agree"
             ]);
           $(".task_view").attr("ask",curTrial.question);
+          break;*/
+        case "MEAN": 
+          addOptions_MEAN();
+        //  $(".task_view").attr("ask",curTrial.question);
           break;
       }
       // Show progress
@@ -475,7 +514,15 @@ $(document).ready( function(){
 
   $("body").attr("stimulus",stimulus);
 
-  if(QueryString.taskType==="VIEW"){
+ /* if(QueryString.taskType==="VIEW"){
+    exp_data_cond = QueryString.COND;
+    if(exp_data_cond===undefined){
+      alert("You need to define COND parameter...")
+      return;
+    }
+  }*/
+
+if(QueryString.taskType==="MEAN"){
     exp_data_cond = QueryString.COND;
     if(exp_data_cond===undefined){
       alert("You need to define COND parameter...")
@@ -483,6 +530,7 @@ $(document).ready( function(){
     }
   }
 
+    
   if(prepareTrials(QueryString.taskType, QueryString.setting)===false) return;
 
   if(QueryString.ready || stimulus==="BACK" || stimulus==="MARK"){
@@ -594,6 +642,7 @@ $(document).ready( function(){
       $(".task_larger_percentage .smaller").attr("highType",highType==="1"?2:1);
       $(".task_larger_percentage .larger").attr("highType",highType==="1"?1:2);
       $(".task_larger").attr("answered", "true");
+      timeMid = Date.now()-taskTimeStart;
     });
 
   // Tooltip for explain button
@@ -623,6 +672,7 @@ $(document).ready( function(){
   };
 
 });
+    
 
 function addOptions_COMP(options){
   var s = d3.select(".task_larger_percentage > .percentage_group");
@@ -638,10 +688,19 @@ function addOptions_COMP(options){
       if(curTrial.training){
         if(selectedLarger!==curTrial.larger || selectedPercentage!==curTrial.truePercentage){
           wrong_training++;
-          alert("Your answer to this training trial is not correct. Please try again.");
+            d3.select(".task_larger_percentage").select("#success_message").style("display", "none");
+            d3.select(".task_larger_percentage").select("#error_message").style("display", "block");
+            //document.getElementById("error_message").style.display = "block";
+            //alert("Your answer to this training trial is not correct. Please try again.");
         } else {
           //alert("Your answer to this training trial was correct.");
-          getNextTrial();
+          d3.select(".task_larger_percentage").select("#error_message").style("display", "none");
+          d3.select(".task_larger_percentage").select("#success_message").style("display", "block");
+          //getNextTrial();
+             setTimeout(function () {
+              d3.select(".task_rank").select("#success_message").style("display", "none");
+              getNextTrial();
+          }, 1000);
         }
       } else {
         var answer = createAnswer_Basics();
@@ -649,6 +708,8 @@ function addOptions_COMP(options){
         answer.trueLarger = curTrial.larger;
         answer.larger = selectedLarger;
         answer.percent = selectedPercentage;
+        answer.timeMid = timeMid; //timeMid is time after first task
+       // console.log(timeMid);
         
         // Add positions of the larger and smaller records
         chubuk.theData.forEach(function(record){
@@ -676,12 +737,15 @@ function addOptions_COMP(options){
         getNextTrial();
       }
       // Make the answer block disappear & re-appear as a transition
-      $(".task_larger_percentage").attr("active","false");
-      $(".task_larger").attr("active","false");
-      $(".task_larger").attr("answered","false");
-      $(".task_rank .num_by_click").text("");
-      $(".task_larger .marked_block[selected=true]").removeAttr("selected");
-      setTimeout(function(){ $(".task_larger").attr("active","true"); },400);
+      setTimeout(function () {
+          d3.select(".task_larger_percentage").select("#error_message").style("display", "none");
+          $(".task_larger_percentage").attr("active","false");
+          $(".task_larger").attr("active","false");
+          $(".task_larger").attr("answered","false");
+          $(".task_rank .num_by_click").text("");
+          $(".task_larger .marked_block[selected=true]").removeAttr("selected");
+          setTimeout(function(){ $(".task_larger").attr("active","true"); },400);
+      }, 800);
     });;
 };
 
@@ -699,9 +763,16 @@ function addOptions_RANK(options){
       if(curTrial.training){
         if(selectedRank!==curTrial.trueRank){
           wrong_training++;
-          alert("Your answer to training trial is not correct. Please try again.");
+          d3.select(".task_rank").select("#success_message").style("display", "none");
+          d3.select(".task_rank").select("#error_message").style("display", "block");
+          //alert("Your answer to training trial is not correct. Please try again.");
         } else {
-          getNextTrial();
+          d3.select(".task_rank").select("#error_message").style("display", "none");
+          d3.select(".task_rank").select("#success_message").style("display", "block");
+          setTimeout(function () {
+              d3.select(".task_rank").select("#success_message").style("display", "none");
+              getNextTrial();
+          }, 1000);
         }
       } else {
         var answer = createAnswer_Basics();
@@ -712,13 +783,13 @@ function addOptions_RANK(options){
         getNextTrial();
       }
       // Make the answer block disappear & re-appear as a transition
-      $(".task_rank").attr("active","false");
-      $(".task_rank .num_by_click").text("");
-      setTimeout(function(){ $(".task_rank").attr("active","true"); },500);
+      //$(".task_rank").attr("active","false");
+     // $(".task_rank .num_by_click").text("");
+     // setTimeout(function(){ $(".task_rank").attr("active","true"); },100);
     });
 };
 
-function addOptions_VIEW(options){
+/*function addOptions_VIEW(options){
   var s = d3.select(".task_view > .percentage_group");
   s.selectAll("span.percentage_block").remove();
   s.selectAll("span.percentage_block").data(options, function(d){return d;} ).enter()
@@ -748,6 +819,60 @@ function addOptions_VIEW(options){
       $(".task_view").attr("active","false");
       setTimeout(function(){ $(".task_view").attr("active","true"); },500);
     });
+};*/
+    
+function addOptions_MEAN(){
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+    output.innerHTML = slider.value;
+    if(curTrial.training){
+      d3.select(slider).attr("step", "10");
+    } else {
+      d3.select(slider).attr("step", "1");
+    }
+    d3.select(slider)
+    .on("input", function () {
+      output.innerHTML = this.value;  
+    })    
+    .on("change", function() {
+      output.innerHTML = this.value;
+      var selectedMean = parseInt(this.value);
+      if(curTrial.training){
+        if(Math.round(selectedMean/10)!==Math.round(curTrial.trueMean/10)){
+          wrong_training++;
+          d3.select(".task_mean").select("#success_message").style("display", "none");
+          d3.select(".task_mean").select("#error_message").style("display", "block");
+          //alert("Your answer to training trial is not correct. Please try again.");
+        } else {
+          d3.select(".task_mean").select("#error_message").style("display", "none");
+          d3.select(".task_mean").select("#success_message").style("display", "block");
+          setTimeout(function () {
+              d3.select(".task_mean").select("#success_message").style("display", "none");
+              document.getElementById("myRange").value = "0";
+              document.getElementById("demo").innerHTML = "0";
+              getNextTrial();
+          }, 500);
+        }
+      } else {
+        var answer = createAnswer_Basics();
+        answer.trueMean = curTrial.trueMean;
+        answer.mean = parseInt(this.value);
+        answers.push(answer);
+
+        setTimeout(function () {
+          document.getElementById("myRange").value = "0";
+          document.getElementById("demo").innerHTML = "0";
+          getNextTrial();
+      }, 1000);
+      }
+        
+    });
+    
+    
+    
+   /* $(".task_mean").attr("active","false");
+      setTimeout(function(){ $(".task_mean").attr("active","true"); },500);
+    });*/
 };
 
 function scrollChart(targetPos){
@@ -821,6 +946,8 @@ function scrollChart(targetPos){
           <span class="qmark_or_dot"></span>
           </span> 
         <span class="task_helper"><span class="fa fa-arrow-left"></span> Click one</span>
+          <div id="error_message"><br>Your answer to training trial is not correct. Please try again.</div>
+          <div id="success_message" style=""><br>Correct answer!</div>
         </span>
 
       <span class="task task_larger_percentage">
@@ -831,6 +958,8 @@ function scrollChart(targetPos){
           <span class="fa fa-arrow-down"></span> Click one
           </span>
         <div class="percentage_group"></div>
+          <div id="error_message"><br>Your answer to training trial is not correct. Please try again.</div>
+          <div id="success_message" style=""><br>Correct answer!</div>
         </span>
 
       <span class="task task_rank" active="true" >
@@ -842,6 +971,8 @@ function scrollChart(targetPos){
           <span class="fa fa-arrow-down"></span> Click one to answer.
           </span>
         <div class="percentage_group"></div>
+          <div id="error_message"><br>Your answer to training trial is not correct. Please try again.</div>
+          <div id="success_message" style=""><br>Correct answer!</div>
         </span>
 
       <span class="task task_view" active="true" >
@@ -856,6 +987,23 @@ function scrollChart(targetPos){
           </span>
           <span class="explain"><span class='fa fa-info-circle'></span> Explanation </span>
         <div class="percentage_group"></div>
+        </span>
+        
+     <span class="task task_mean" active="true" >
+        <span class="questionBody">
+         Estimate the average value in all of the items displayed in this visualization combined. 
+        </span>
+        <span class="task_helper" style="margin-bottom: 5px;">
+          <div style="margin-bottom: 5px;">Use a relative scale, where 100% is the largest value in the list, and 0% is zero.</div>
+          <span class="fa fa-arrow-down"></span> Drag the slider to answer.
+          </span>
+        <div class="percentage_group"></div>
+          <div class="slidecontainer">
+               <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+              <p>Value: <span id="demo"></span></p>
+            </div> 
+         <div id="error_message" style="">Your answer to training trial is not correct. Please try again.</div>
+         <div id="success_message" style="">Correct answer!</div>
         </span>
 
     </div> <!--taskWrapper -->

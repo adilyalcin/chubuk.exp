@@ -993,7 +993,8 @@ Chubuk.prototype = {
       
       
       // new code
-     this.row_height = this.bar_height_list;
+      this.row_height = this.bar_height_list - this.bar_padding;
+//      console.log(this.row_height );
      for (var i = 0; i < n; i++) {
           a[i] = 0;
           b[i]=0;
