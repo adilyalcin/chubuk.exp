@@ -3,6 +3,7 @@
 	<head>
 		<title>Chubuk Experiment</title><meta charset="utf-8">
 
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css">-->
     <script type="text/javascript" src="./js/d3.3.5.5.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
 
@@ -833,10 +834,12 @@ function addOptions_MEAN(){
     d3.select(slider)
     .on("input", function () {
       output.innerHTML = this.value;  
-    })    
-    .on("change", function() {
-      output.innerHTML = this.value;
-      var selectedMean = parseInt(this.value);
+    });    
+    //.on("change", function() {
+    d3.select("#next-btn")
+    .on("click", function() {
+      output.innerHTML = slider.value;
+      var selectedMean = parseInt(slider.value);
       if(curTrial.training){
         if(Math.round(selectedMean/10)!==Math.round(curTrial.trueMean/10)){
           wrong_training++;
@@ -1000,8 +1003,14 @@ function scrollChart(targetPos){
         <div class="percentage_group"></div>
           <div class="slidecontainer">
                <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
-              <p>Value: <span id="demo"></span></p>
+              <p>Value: <span id="demo"></span> 
+                  
+<!--                   <input type="submit" data-inline="true" value="Submit">-->
+              
+              </p><button id="next-btn" >Next>></button>
             </div> 
+         <br>
+         
          <div id="error_message" style="">Your answer to training trial is not correct. Please try again.</div>
          <div id="success_message" style="">Correct answer!</div>
         </span>

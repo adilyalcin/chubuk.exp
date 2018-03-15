@@ -586,3 +586,21 @@ body[teach="true"] .Chubuk .record {
     color: green; 
     display:none;
 }
+
+#next-btn {
+  -webkit-border-radius: 5;
+  -moz-border-radius: 5;
+  border-radius: 5px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 16px;
+  background: #9CC4DF;
+  padding: 10px 15px 10px 15px;
+  text-decoration: none;
+}
+
+#next-btn:hover {
+  background: #5fa8d9;
+  text-decoration: none;
+}
+#next-btn:focus {outline:0;}
