@@ -222,9 +222,18 @@ function prepareTrials(_tgroup, _setting){
       trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG.json");
       break;*/
     case "MEAN":
-      trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI.json");
-      trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM.json");
-      trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG.json");
+      //trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI.json");
+     // trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM.json");
+     // trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG.json");
+     // trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI2.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM2.json");
+     //trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG2.json");
+     // trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI3.json");
+      //trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM3.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG3.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_UNI4.json");
+      //trainingTrials.push("./trial_datasets/VIEW_TRAIN_NORM4.json");
+      trainingTrials.push("./trial_datasets/VIEW_TRAIN_LOG4.json");
       break;
   }
   shuffle(trainingTrials);
@@ -296,6 +305,7 @@ function refreshMarks(){
 
 function getNextTrial(){
   currentTrialIndex++;
+    
 
   // If all trials are shown, the experiment is done!
   if(currentTrialIndex===trialFiles.length){
@@ -436,6 +446,14 @@ function getNextTrial(){
         document.getElementById("in_tickTimer").textContent = ++tickCount;
         document.getElementById("tickTimer").setAttribute("threshold", (tickCount>=10) );
       }, 1000);
+        
+    }
+      
+    if (chart_type == "LL") {
+          
+        var top = +d3.select(d3.selectAll(".record")[0][d3.selectAll(".record")[0].length -1]).style("top").replace("px", "");
+        
+        scrollChart(top - 100);      
     }
   });
 };
@@ -452,6 +470,9 @@ function createAnswer_Basics(){
 
 function applyChartType(){
   switch(chart_type){
+    case "LL": 
+          chubuk.setConfig("chart_type","long_list");
+          break;
     case "TM": chubuk.setConfig("chart_type","treemap"); break;
     case "WB": chubuk.setConfig("chart_type","wrapped_bars"); break;
     case "PB": chubuk.setConfig("chart_type","piled_bars"); break;
@@ -687,6 +708,8 @@ function addOptions_COMP(options){
       var selectedPercentage = parseInt(this.textContent);
       var selectedLarger = parseInt($(".marked_block[selected='true']").attr("hightype"));
       if(curTrial.training){
+          //d3.select(".task_larger_percentage").select("#success_message").style("display", "none");
+          //d3.select(".task_larger_percentage").select("#error_message").style("display", "none");
         if(selectedLarger!==curTrial.larger || selectedPercentage!==curTrial.truePercentage){
           wrong_training++;
             d3.select(".task_larger_percentage").select("#success_message").style("display", "none");
@@ -695,13 +718,13 @@ function addOptions_COMP(options){
             //alert("Your answer to this training trial is not correct. Please try again.");
         } else {
           //alert("Your answer to this training trial was correct.");
-          d3.select(".task_larger_percentage").select("#error_message").style("display", "none");
+         d3.select(".task_larger_percentage").select("#error_message").style("display", "none");
           d3.select(".task_larger_percentage").select("#success_message").style("display", "block");
           //getNextTrial();
              setTimeout(function () {
-              d3.select(".task_rank").select("#success_message").style("display", "none");
+              d3.select(".task_larger_percentage").select("#success_message").style("display", "none");
               getNextTrial();
-          }, 1000);
+          }, 800);
         }
       } else {
         var answer = createAnswer_Basics();
@@ -823,6 +846,7 @@ function addOptions_RANK(options){
 };*/
     
 function addOptions_MEAN(){
+    d3.select("#next-btn").style("display","none");
     var slider = document.getElementById("myRange");
     var output = document.getElementById("demo");
     output.innerHTML = slider.value;
@@ -833,7 +857,8 @@ function addOptions_MEAN(){
     }
     d3.select(slider)
     .on("input", function () {
-      output.innerHTML = this.value;  
+      output.innerHTML = this.value;
+      d3.select("#next-btn").style("display","inline");
     });    
     //.on("change", function() {
     d3.select("#next-btn")
@@ -866,12 +891,12 @@ function addOptions_MEAN(){
           document.getElementById("myRange").value = "0";
           document.getElementById("demo").innerHTML = "0";
           getNextTrial();
-      }, 1000);
+      }, 200);
+        
+     
       }
         
     });
-    
-    
     
    /* $(".task_mean").attr("active","false");
       setTimeout(function(){ $(".task_mean").attr("active","true"); },500);
@@ -879,12 +904,16 @@ function addOptions_MEAN(){
 };
 
 function scrollChart(targetPos){
-  scrollDom = $(".Chubuk .recordGroup")[0];
+    if(targetPos > 0){
+    $(".Chubuk .recordGroup").scrollTop(0);
+  }
+  scrollDom = $(".Chubuk .recordGroup")[0];    
   // scroll to top
   var startTime = null;
   var scrollInit = scrollDom.scrollTop;
   var easeFunc = d3.ease('cubic-in-out');
   var scrollTime = 3000;
+  
   var animateToTop = function(timestamp){
     var progress;
     if(startTime===null) startTime = timestamp;
@@ -896,7 +925,8 @@ function scrollChart(targetPos){
     if(v!==targetPos){
         window.requestAnimationFrame(animateToTop);
     } else {
-      if(targetPos===900){
+//      if(targetPos===900){
+      if(targetPos > 0){
         scrollChart(0);
       }
     }
@@ -1003,6 +1033,7 @@ function scrollChart(targetPos){
         <div class="percentage_group"></div>
           <div class="slidecontainer">
                <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
+              <p style="float:left;padding-left:4px; margin-top:4px;">0</p><p style="float:right;margin-top:4px;">100</p>
               <p>Value: <span id="demo"></span> 
                   
 <!--                   <input type="submit" data-inline="true" value="Submit">-->
@@ -1014,6 +1045,8 @@ function scrollChart(targetPos){
          <div id="error_message" style="">Your answer to training trial is not correct. Please try again.</div>
          <div id="success_message" style="">Correct answer!</div>
         </span>
+        
+        
 
     </div> <!--taskWrapper -->
 

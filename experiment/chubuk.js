@@ -297,7 +297,7 @@ Chubuk.prototype = {
 
     this.DOM.recordGroup.on("scroll",function(){
       if(me.chart_type!=="long_list") return;
-      if(me.firstNegativeIndex = me.theData.length) return; // no negative values
+      if(me.firstNegativeIndex == me.theData.length) return; // no negative values
       var bottomPixel = this.scrollTop+this.offsetHeight;
       var topMostBar    = Math.ceil(this.scrollTop/me.row_height);
       var bottomMostBar = Math.ceil(bottomPixel/me.row_height);

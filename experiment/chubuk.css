@@ -357,7 +357,7 @@
   margin-bottom: -1px;
 }
 .Chubuk[chart_type="long_list"] > .chartWrapper > .recordGroup {
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 .Chubuk[chart_type="long_list"] > .configPanel > .configGroup > .configOpt.barHeightList {
   display: inline-block;
