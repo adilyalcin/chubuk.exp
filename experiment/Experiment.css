@@ -134,12 +134,18 @@ body[taskType="COMP"] .task.task_larger_percentage {
 body[taskType="COMP"] .teach_COMP_RANK {
   display: block;
 }
+body[taskType="COMP"] .teach_MEAN {
+  display: none;
+}
 body[taskType="RANK"] .task.task_rank,
 body[taskType="RANK"] .rank_mark {
   display: block;
 }
 body[taskType="RANK"] .teach_COMP_RANK {
   display: block;
+}
+body[taskType="RANK"] .teach_MEAN {
+  display: none;
 }
 body[taskType="RANK"] .record[highlight="opt_2"] .theDot {
   display: none;
@@ -151,7 +157,11 @@ body[taskType="VIEW"] .teach_VIEW {
   display: block;
 }
 
-body[taskType="MEAN"] .task.task_mean {
+body[taskType="MEAN"] .task.task_mean,
+body[taskType="MEAN"] .rank_mark {
+  display: block;
+}
+body[taskType="MEAN"] .teach_MEAN {
   display: block;
 }
 
@@ -168,6 +178,16 @@ body[chart="PB"] #rank_mark_large {
   bottom: 0px;
 }
 body[chart="PB"] #rank_mark_small {
+  right: -20px;
+  left: auto;
+  top: 0px;
+}
+body[chart="ZP"] #rank_mark_large {
+  left: -40px;
+  right: auto;
+  bottom: 0px;
+}
+body[chart="ZP"] #rank_mark_small {
   right: -20px;
   left: auto;
   top: 0px;
@@ -261,6 +281,20 @@ body[teach="true"] .Chubuk .record {
   display: inline-block;
   padding: 3px;
   clear: both;
+}
+.longlist-note {
+  border-radius: 4px;
+  border: solid 1px lightgray;
+  box-shadow: 1px 1px 2px gray;
+  cursor: pointer;
+  margin: 5px;
+  display: inline-block;
+  padding: 3px;
+  clear: both;
+}
+.longlist-note:hover {
+  background-color: #EEE;
+  border: solid 1px orangered;
 }
 .teaching_sequence > .trigger_button:hover {
   background-color: #EEE;

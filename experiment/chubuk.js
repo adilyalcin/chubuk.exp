@@ -476,11 +476,12 @@ Chubuk.prototype = {
         if(d.Value<0 && me.showColor){
           this.style.backgroundColor = "rgb(202, 66, 13)";
         } else {
+            if(me.chart_type!=="packed_bars")
           this.style.backgroundColor = "rgb(42, 129, 179)";
         }
       })
       .on("mouseout",function(d){
-        if(me.chart_type==="piled_bars"){
+        if(me.chart_type==="piled_bars"||me.chart_type==="packed_bars"){
           this.style.backgroundImage = d.oldBackground;
         } else {
           this.style.backgroundColor = null;
@@ -547,6 +548,7 @@ Chubuk.prototype = {
   /** -- */
   refreshViz_long_list: function (){
     var me=this;
+    
     this.sortData_decr();
 
     this.row_height = this.bar_height_list;
@@ -919,40 +921,7 @@ Chubuk.prototype = {
 
 
   refreshViz_packed_bars: function () {
-      /* var me = this;
-
-       this.sortData_decr();
-
-       this.barScale
-         .domain([
-           (this.firstNegativeIndex===this.theData.length) ? 0 : (d3.min(this.theData,function(d){ return d.Value;})) ,
-           d3.max(this.theData,function(d){ return d.Value;})
-         ])
-         .range([0,this.chart_width]);
-
-       var zeroPt = this.barScale(0);
-
-       this.DOM.records
-         .each(function(d){
-           // d.band_Ratio is used to interpolate the color
-           d.bandRatio = 0;
-           if(d._colOrder>=0){
-             if(me.largestBandNo>0){
-               d.bandRatio = 1 - d._colOrder / (me.largestBandNo);
-             }
-           } else {
-             if(me.smallestBandNo<-1){
-               d.bandRatio = 1 - (d._colOrder+1) / (me.smallestBandNo+1);
-             }
-           }
-         })
-         .style("height",(this.row_height-this.bar_padding)+"px")
-         .style("width",  function(d){ return Math.abs(me.barScale(d.Value)-zeroPt)+"px"; })
-         .style("left",   function(d){ return ( (d.Value>=0) ? zeroPt : me.barScale(d.Value) ) +"px"; })
-         .style("top",    function(d){ return (d._rowOrder*me.row_height)+"px" })
-         .style("z-index",function(d){ return me.largestBandNo+5-Math.abs(d._colOrder); });
-         
-       this.refreshScale();*/
+     
 
       var me = this;
       //this.sortData_decr_abs();
@@ -966,33 +935,7 @@ Chubuk.prototype = {
       var n = 28;
       var a = new Array(n);
       var b = new Array(n);
-//      for (var i = 0; i < n; i++) {
-//          a[i] = Math.abs(this.theData[i].Value);
-//          this.theData[i].left = 0;
-//          this.theData[i].top = (1 + i * Math.ceil(me.row_height));
-//          this.theData[i].LabelDisplay = true;
-//      }
 
-//      for (var j = n; j < this.theData.length; j += n) {
-//
-//          var iA = sortWithIndeces(a.slice());
-//
-//          for (var k = 0; k < iA.length; k++) {
-//              if (j + k < this.theData.length) {
-//                  this.theData[j + k].LabelDisplay = true;
-//                  if ((j + k) >= n*2) {
-//                      this.theData[j + k].LabelDisplay = false;
-//                  }
-//                  this.theData[j + k].left = a[iA[k]];
-//                  this.theData[j + k].top = (1 + iA[k] * Math.ceil(me.row_height));
-//                  a[iA[k]] = a[iA[k]] + Math.abs(this.theData[j + k].Value);
-//              }
-//          }
-//
-//      }
-      
-      
-      // new code
       this.row_height = this.bar_height_list - this.bar_padding;
 //      console.log(this.row_height );
      for (var i = 0; i < n; i++) {
@@ -1003,9 +946,7 @@ Chubuk.prototype = {
       for (var i = 0; i < PosData.length; i++) {
           
           var iA = sortWithIndeces(a.slice());
-          
           var indexOfA = iA[0];
-          
           PosData[i].left = a[indexOfA];
           PosData[i].top = indexOfA * me.row_height;
           a[indexOfA] += Math.abs(PosData[i].Value); 
@@ -1032,18 +973,7 @@ Chubuk.prototype = {
 
       this.theData = PosData.concat(NegData);
 
-      // for (var j = this.theData.le; j < n; j+=n) {
-      //      
-      //    var iA = sortWithIndeces(a.slice());
-      //        
-      //      for(var k = 0; k<iA.length; k++){
-      //          this.theData[j+iA[k]].left = a[iA[k]];
-      //          this.theData[j+iA[k]].top = (1+iA[k]*me.row_height);
-      //          a[iA[k]] = a[iA[k]]+ this.theData[j+iA[k]].Value;     
-      //      }
-      //  
-      //   }
-
+  
       var min = d3.min(b, function (d) {
               return -d;
           });
@@ -1063,15 +993,7 @@ Chubuk.prototype = {
           .style("top", function (d, i) {
               return (1+d.top) + "px";
           })
-      /*    .style("left", function (d, i) {
-              if (d.Value > 0) {
-                  return (Math.ceil(i / n) + me.barScale(d.left)) + "px";
-              } else {
-                  return (Math.ceil((i - PosData.length) / n) + me.barScale(0) - me.barScale(d.right + min) 
-                                              - me.barScale(Math.abs(d.Value) + min)) + "px";
-              }
-              
-          })*/
+         
           .style("left", function (d, i) {
               if (d.Value > 0) {
                   return (me.barScale(d.left)) + "px";
@@ -1086,6 +1008,9 @@ Chubuk.prototype = {
       dataDOM_blocks
           .style("background-image", null)
           .style("background-color", null)
+          .style("background-color",function(d,i){
+             if (i>27) return "#D0D0D0";
+          })
           .style("border-color", null);
       this.DOM.labels
           .style("display", function (d, i) {

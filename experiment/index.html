@@ -451,9 +451,14 @@ function getNextTrial(){
       
     if (chart_type == "LL") {
           
-        var top = +d3.select(d3.selectAll(".record")[0][d3.selectAll(".record")[0].length -1]).style("top").replace("px", "");
-        
-        scrollChart(top - 100);      
+        var top = d3.select(d3.selectAll(".record")[0][d3.selectAll(".record")[0].length -1]).style("top").replace("px", "");
+        d3.selectAll(".longlist-note").text("Click to see all blocks")
+        //.style("width","100%")
+        .style("text-align","center")
+        .on('click',function(){
+           scrollChart(top-100);
+        });
+         
     }
   });
 };
@@ -555,7 +560,8 @@ if(QueryString.taskType==="MEAN"){
     
   if(prepareTrials(QueryString.taskType, QueryString.setting)===false) return;
 
-  if(QueryString.ready || stimulus==="BACK" || stimulus==="MARK"){
+  //if(QueryString.ready || stimulus==="BACK" || stimulus==="MARK"){
+  if(QueryString.ready || chart_type==="LL"){
     // bypass animation
     applyChartType();
     getNextTrial();
@@ -574,7 +580,10 @@ if(QueryString.taskType==="MEAN"){
       addMarks();
       $(".num_blocks").html(curTrial.dataSize);
       $(".teaching_UNI").css("display","block");
-      sequenceType = "UNI";
+        if(QueryString.taskType==="MEAN")
+           sequenceType = "UNI";
+        else
+            sequenceType = "NORM";
     });
 
   }
@@ -592,6 +601,7 @@ if(QueryString.taskType==="MEAN"){
   });
 
   $(".trigger_convert").click(function(){
+   
     d3.select(".trigger_show_all").style("display","none");
     d3.select(".trigger_convert").style("display","none");
     applyChartType();
@@ -602,7 +612,7 @@ if(QueryString.taskType==="MEAN"){
         d3.select(".trigger_continue").style("display","inline-block");
       }, 1000);
     }, 1500);
-  });
+  } );
 
   $(".trigger_long").click(function(){
     d3.select(".trigger_long").style("display","none");
@@ -653,6 +663,7 @@ if(QueryString.taskType==="MEAN"){
         getNextTrial();
         break;
     }
+   
   });
 
   // COMPARISON - SELECT THE LARGER BLOCK
@@ -912,7 +923,7 @@ function scrollChart(targetPos){
   var startTime = null;
   var scrollInit = scrollDom.scrollTop;
   var easeFunc = d3.ease('cubic-in-out');
-  var scrollTime = 3000;
+  var scrollTime = 2500;
   
   var animateToTop = function(timestamp){
     var progress;
@@ -966,8 +977,8 @@ function scrollChart(targetPos){
     <div class="taskWrapper">
       <div id="tickTimer"><span class='fa fa-clock-o'></span><span id="in_tickTimer"></span></div>
       <div id="progressIndex"><span id="in_progressIndex"></span><span class='fa fa-list'></span></div>
-
-      <span class="task_info">
+        <div style="width:100%;text-align: center;"><span class="longlist-note"></span> </div><br>
+        <span class="task_info" >
         Answer based on your <b>quick</b> and <b>visual</b> judgment as <b>accurately</b> as possible.
         </span>
     
@@ -1033,7 +1044,7 @@ function scrollChart(targetPos){
         <div class="percentage_group"></div>
           <div class="slidecontainer">
                <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
-              <p style="float:left;padding-left:4px; margin-top:4px;">0</p><p style="float:right;margin-top:4px;">100</p>
+              <p style="float:left;padding-left:4px; margin-top:4px;">0%</p><p style="float:right;margin-top:4px;">100%</p>
               <p>Value: <span id="demo"></span> 
                   
 <!--                   <input type="submit" data-inline="true" value="Submit">-->
@@ -1052,18 +1063,18 @@ function scrollChart(targetPos){
 
     <div class="teaching_sequence">
       <div style="color: orangered;">Please read the statements and observe changes carefully.</div>
-      <div class="teaching_text teaching_UNI">
-        <span class='teach_VIEW'>
+     <div class="teaching_text teaching_UNI">
+        <span class='teach_MEAN'>
           The block sizes have a <i>uniform distribution</i>.<br>
           There is a block of all possible sizes.
           </span>
-        <span class='teach_COMP_RANK'>
+         <span class='teach_COMP_RANK'>
           There are 75 blocks in this chart, sorted in decreasing size.<br>
           Some blocks are highlighted with a mark in the middle of its visible part.
-          </span>
+         </span>
         </div>  
       <div class="teaching_text teaching_LOG">
-        <span class='teach_VIEW'>
+        <span class='teach_MEAN'>
           The block sizes have a <i>skewed distribution</i>.<br>
           There are a few blocks that are substantially larger than all the rest.
           </span>
@@ -1072,8 +1083,8 @@ function scrollChart(targetPos){
           Some blocks are highlighted with a mark in the middle of its visible part.
           </span>
         </div>
-      <div class="teaching_text teaching_NORM">
-        <span class='teach_VIEW'>
+   <div class="teaching_text teaching_NORM">
+        <span class='teach_MEAN'>
           The block sizes have a <i>normal distribution</i>.<br>
           There are more medium-sized blocks than small and large blocks.
           </span>
@@ -1083,8 +1094,8 @@ function scrollChart(targetPos){
           </span>
         </div>
       
-      <div class="trigger_button trigger_show_all">Click to see all blocks</span></div>
-      <div class="trigger_button trigger_convert">Click to change chart design</span></div>
+      <div class="trigger_button trigger_show_all">Click to see all blocks</div>
+      <div class="trigger_button trigger_convert">Click to change chart design</div>
       <div class="trigger_button trigger_long">Click to see long record list again.</div>
 
       <br><br>

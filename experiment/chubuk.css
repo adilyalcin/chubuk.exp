@@ -357,7 +357,8 @@
   margin-bottom: -1px;
 }
 .Chubuk[chart_type="long_list"] > .chartWrapper > .recordGroup {
-  overflow-y: scroll;
+    overflow-y: scroll !important;
+    
 }
 .Chubuk[chart_type="long_list"] > .configPanel > .configGroup > .configOpt.barHeightList {
   display: inline-block;
@@ -728,3 +729,8 @@
   border-top-color: transparent !important;
   border-bottom-color: transparent !important;
 }
+/*::-webkit-scrollbar {
+    width: 9px!important;
+    height: 3px!important;
+    background-color: #eee!important;
+}*/
