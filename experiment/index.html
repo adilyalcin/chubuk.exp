@@ -454,7 +454,7 @@ function getNextTrial(){
         var top = d3.select(d3.selectAll(".record")[0][d3.selectAll(".record")[0].length -1]).style("top").replace("px", "");
         d3.selectAll(".longlist-note").text("Click to see all blocks")
         //.style("width","100%")
-        .style("text-align","center")
+        .style("display","inline-block")
         .on('click',function(){
            scrollChart(top-100);
         });
@@ -977,7 +977,7 @@ function scrollChart(targetPos){
     <div class="taskWrapper">
       <div id="tickTimer"><span class='fa fa-clock-o'></span><span id="in_tickTimer"></span></div>
       <div id="progressIndex"><span id="in_progressIndex"></span><span class='fa fa-list'></span></div>
-        <div style="width:100%;text-align: center;"><span class="longlist-note"></span> </div><br>
+        <div style="width:100%;text-align: center;"><span class="longlist-note" style="display:none;"></span> </div><br>
         <span class="task_info" >
         Answer based on your <b>quick</b> and <b>visual</b> judgment as <b>accurately</b> as possible.
         </span>
