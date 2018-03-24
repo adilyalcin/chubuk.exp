@@ -1009,7 +1009,13 @@ Chubuk.prototype = {
           .style("background-image", null)
           .style("background-color", null)
           .style("background-color",function(d,i){
-             if (i>27) return "#D0D0D0";
+             if(i>27){
+                 for(i=28;i<me.theData.length;i++){
+                    var hsl = "hsl("+0+", "+ 0 +"%, "+rand(80, 90) +"%)";
+  
+                    return hsl;
+               } 
+             }
           })
           .style("border-color", null);
       this.DOM.labels
@@ -1046,3 +1052,11 @@ Chubuk.prototype = {
       }
       return sortIndices;
   }
+
+
+
+function rand(min, max){
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
