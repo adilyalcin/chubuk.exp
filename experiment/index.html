@@ -170,26 +170,37 @@ function prepareTrials(_tgroup, _setting){
       break;*/
     case "MEAN_DS":
       // 54 trials
-      [75, 150, 300].forEach(function(dataSize){
-        ["UNI","LOG","NORM"].forEach(function(distr){
-          ["UNI","LOG","NORM"].forEach(function(question){
-            [exp_data_cond].forEach(function(rep){
-              trialFiles.push("./trial_datasets/VIEW_"+dataSize+"DS_3L_"+distr+"_"+question+"_"+rep+".json")
+//      [75, 150, 300].forEach(function(dataSize){
+//        ["UNI","LOG","NORM"].forEach(function(distr){
+//          ["UNI","LOG","NORM"].forEach(function(question){
+//            [exp_data_cond].forEach(function(rep){
+//              trialFiles.push("./trial_datasets/VIEW_"+dataSize+"DS_3L_"+distr+"_"+question+"_"+rep+".json")
+//            });
+//          });
+//        });
+//      });
+//        });  
+          
+        [3, 6, 12].forEach(function(layout){
+        ["UNI","LOG"].forEach(function(distr){
+            [2, 4, 5, 7, 9].forEach(function(rep){
+              trialFiles.push("./trial_datasets/VIEW_75DS_"+layout+"L_"+distr+"_"+distr+"_"+rep+".json")
             });
           });
         });
-      });
+      
       break;
     case "MEAN_LA":
       // 54 trials
       [3, 6, 12].forEach(function(layout){
-        ["UNI","LOG","NORM"].forEach(function(distr){
-          ["UNI","LOG","NORM"].forEach(function(question){
-            [exp_data_cond].forEach(function(rep){
-              trialFiles.push("./trial_datasets/VIEW_75DS_"+layout+"L_"+distr+"_"+question+"_"+rep+".json")
+        ["UNI","LOG"].forEach(function(distr){
+//        ["UNI","LOG","NORM"].forEach(function(distr){
+//          ["UNI","LOG","NORM"].forEach(function(question){
+            [2, 4, 5, 7, 9].forEach(function(rep){
+              trialFiles.push("./trial_datasets/VIEW_75DS_"+layout+"L_"+distr+"_"+distr+"_"+rep+".json")
             });
           });
-        });
+//        });
       });
       break;
   }
@@ -550,13 +561,13 @@ $(document).ready( function(){
   }*/
     
 
-if(QueryString.taskType==="MEAN"){
-    exp_data_cond = QueryString.COND;
-    if(exp_data_cond===undefined){
-      alert("You need to define COND parameter...")
-      return;
-    }
-  }
+//if(QueryString.taskType==="MEAN"){
+//    exp_data_cond = QueryString.COND;
+//    if(exp_data_cond===undefined){
+//      console.log("You need to define COND parameter...");
+//      return;
+//    }
+//  }
 
     
   if(prepareTrials(QueryString.taskType, QueryString.setting)===false) return;
@@ -673,8 +684,8 @@ if(QueryString.taskType==="MEAN"){
       this.setAttribute("selected","true");
       var highType = this.getAttribute("highType");
       $(".task_larger_percentage").attr("active","true");
-      $(".task_larger_percentage .smaller").attr("highType",highType==="1"?2:1);
-      $(".task_larger_percentage .larger").attr("highType",highType==="1"?1:2);
+      $(".task_larger_percentage .smaller").attr("highType",highType==="1"?1:2);
+      $(".task_larger_percentage .larger").attr("highType",highType==="1"?2:1);
       $(".task_larger").attr("answered", "true");
       timeMid = Date.now()-taskTimeStart;
     });
@@ -718,7 +729,9 @@ function addOptions_COMP(options){
     .on("mouseleave",function(){ $(".task_larger_percentage .num_by_click").text(""); })
     .on("click",function(){
       var selectedPercentage = parseInt(this.textContent);
-      var selectedLarger = parseInt($(".marked_block[selected='true']").attr("hightype"));
+      var selectedSmaller = parseInt($(".marked_block[selected='true']").attr("hightype"));
+      var selectedLarger = parseInt($(".marked_block[selected='false']").attr("hightype"));
+      
       if(curTrial.training){
           //d3.select(".task_larger_percentage").select("#success_message").style("display", "none");
           //d3.select(".task_larger_percentage").select("#error_message").style("display", "none");
@@ -984,7 +997,7 @@ function scrollChart(targetPos){
         </span>
     
       <span class="task task_larger" active="true" answered="false">
-        <span class="questionBody">The larger block is 
+        <span class="questionBody">The smaller block is 
           <span class="marked_block fa left"></span> 
           <span class="not_answered"> or </span>
           <span class="marked_block fa right"></span> 
