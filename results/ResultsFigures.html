@@ -388,10 +388,11 @@ $(document).ready( function(){
   // COMPARE - MARK STIMULUS
   var B_COMP_BACK = bootstrap_group.append("span").attr("class","bootstrap_figure B_COMP_BACK");
   B_COMP_BACK.append("span").attr("class","boot_header").text("Comparison - Background Stimulus")
-  B_COMP_BACK.append("span").attr("class","tickGroup tickGroup_comp").selectAll(".tick").data([0,2,4,6,8,10,12,14])
+  var X = B_COMP_BACK.append("span").attr("class","tickGroup tickGroup_comp").selectAll(".tick").data([0,2,4,6,8,10,12,14])
     .enter().append("span").attr("class","tick").attr("tickVal",function(d){ return d; })
-    .style("top",function(d){ return bootstrap_scale_comp_mark(d)+"px"; })
-    .append("span").attr("class","label").text(function(d){ return d+"%"; });
+    .style("top",function(d){ return bootstrap_scale_comp_mark(d)+"px"; });
+  X.append("span").attr("class","label").text(function(d){ return d+"%"; });
+  X.append("span").attr("class","label label_right").text(function(d){ return d+"%"; });
 
   var detailed_comp = B_COMP_BACK.append("span").attr("class","trials").selectAll(".trialGroup").data(bootstrap_COMP_BACK)
     .enter().append("span").attr("class","trialGroup");
@@ -409,10 +410,11 @@ $(document).ready( function(){
   // COMPARE - MARK STIMULUS
   var B_COMP_MARK = bootstrap_group.append("span").attr("class","bootstrap_figure B_COMP_MARK");
   B_COMP_MARK.append("span").attr("class","boot_header").text("Comparison - Mark Stimulus")
-  B_COMP_MARK.append("span").attr("class","tickGroup tickGroup_comp").selectAll(".tick").data([0,3,6,9,12,15,18,21,24])
+  X = B_COMP_MARK.append("span").attr("class","tickGroup tickGroup_comp").selectAll(".tick").data([0,3,6,9,12,15,18,21,24])
     .enter().append("span").attr("class","tick").attr("tickVal",function(d){ return d; })
-    .style("top",function(d){ return bootstrap_scale_comp_back(d)+"px"; })
-    .append("span").attr("class","label").text(function(d){ return d+"%"; });
+    .style("top",function(d){ return bootstrap_scale_comp_back(d)+"px"; });
+  X.append("span").attr("class","label").text(function(d){ return d+"%"; });
+  X.append("span").attr("class","label label_right").text(function(d){ return d+"%"; });
 
   var detailed_comp = B_COMP_MARK.append("span").attr("class","trials").selectAll(".trialGroup").data(bootstrap_COMP_MARK)
     .enter().append("span").attr("class","trialGroup");
@@ -430,10 +432,11 @@ $(document).ready( function(){
   // RANK - MARK STIMULUS
   var B_RANK=bootstrap_group.append("span").attr("class","bootstrap_figure B_RANK");
   B_RANK.append("span").attr("class","boot_header").text("Ranking - Mark Stimulus")
-  B_RANK.append("span").attr("class","tickGroup tickGroup_rank").selectAll(".tick").data([0,3,6,9,12,15,18])
+  X = B_RANK.append("span").attr("class","tickGroup tickGroup_rank").selectAll(".tick").data([0,2,4,6,8,10,12,14,16,18])
     .enter().append("span").attr("class","tick").attr("tickVal",function(d){ return d; })
-    .style("top",function(d){ return bootstrap_scale_rank(d)+"px"; })
-    .append("span").attr("class","label").text(function(d){ return d+"%"; })
+    .style("top",function(d){ return bootstrap_scale_rank(d)+"px"; });
+  X.append("span").attr("class","label").text(function(d){ return d+"%"; })
+  X.append("span").attr("class","label label_right").text(function(d){ return d+"%"; })
 
   var detailed_rank= B_RANK.append("span").selectAll(".trialGroup").data(bootstrap_RANK_MARK)
     .enter().append("span").attr("class","trialGroup");

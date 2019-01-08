@@ -79,9 +79,11 @@ $(document).ready( function(){
     {Label:"Wisconsin", Winner: "Obama", Value:10},
     {Label:"Wyoming", Winner: "Romney", Value:3},
   ];
+  /*
   chubuk.theData.forEach(function(d){
     if(d.Winner==="Romney") d.Value*=-1;
   });
+  */
   chubuk.sortData_decr(true);
 
   chubuk.insertDOM_Records();

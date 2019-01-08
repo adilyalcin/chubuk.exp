@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Chubuk Experiment Responses</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Libraries -->
+    <script type="text/javascript" src="./js/papaparse.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/moment.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="./js/d3.3.5.5.min.js" charset="utf-8"></script>
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300,300italic,500,500italic,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:100,400,300,300italic,500,500italic,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="./ResultsFigures_GI.css"/ type="text/css">
+
+    <script type="text/javascript">
+
+function prepData(filterFunc,valueFunc, groups){
+  // Get the value of interest out of the responses for each trial group
+  groups.forEach(function(trialGroup){
+    trialGroup.values = [];
+    trialGroup.responses.filter(filterFunc).forEach(function(response){
+      // the absolute dif across percentage and true percent
+      trialGroup.values.push(valueFunc(response));
+    });
+    trialGroup.values = trialGroup.values.sort(function(a,b){ return a-b;});
+  });
+  // Compute the percentiles in 10-increments
+  groups.forEach(function(trialGroup){
+    trialGroup.quantile_val = {};
+    [10,20,30,40,50,60,70,80,90].forEach(function(q){
+      trialGroup.quantile_val[q] = d3.quantile(trialGroup.values,q/100);
+    });
+  });
+};
+
+function addVizBlock(filterFunc, valueFunc, percentileType, _scale, _DOM, index, header){
+  prepData(filterFunc, valueFunc, trialGroups_G12345);
+
+  var percentileViz = _DOM.append("div").attr("class","percentileViz "+ percentileType);
+
+  var trialGroup = trialGroups_G12345[index];
+
+  percentileViz.append("span").attr("class","p_Header").html(header);
+
+  percentileViz.selectAll(".percentile_block").data([[10,90],[20,80],[30,70],[40,60]])
+    .enter().append("span").attr("class",function(d){ return "percentile_block"+" q_"+d[0]+"_"+d[1];})
+    .style("left",function(d){
+      return _scale(trialGroup.quantile_val[d[0]])+"px";
+    })
+    .style("width", function(d){
+      return (_scale(trialGroup.quantile_val[d[1]]) - _scale(trialGroup.quantile_val[d[0]]))+"px";
+    });
+
+  // Not the mean of all, but 10-90 percentile removed
+  percentileViz.append("span").attr("class","groupMean").style("left", function(){
+    var d = trialGroup;
+    return _scale(d3.mean(d.values.filter(function(v){ return v>=d.quantile_val[10] && v<=d.quantile_val[90] })))+"px";
+  });
+
+  percentileViz.append("span").attr("class","groupMedian").style("left", function(){
+    var d = trialGroup;
+    return _scale(d.quantile_val[50])+"px";
+  });
+};
+
+var Responses = [];
+/*
+a <- c(...)
+b <- boot(a, function(u,i) mean(u[i]), R = 999)
+boot.ci(b, type = c("norm", "basic", "perc", "bca"))
+*/
+
+var trialGroups_G12345  = [
+  { name:"Data Density, Treemap", 
+    responses:[],
+    75: [],
+    150: [],
+    300: []},
+  { name:"Data Density, Wrapped Bars", 
+    responses:[],
+    75: [],
+    150: [],
+    300: []},
+  { name:"Data Density, Piled Bars", 
+    responses:[],
+    75: [],
+    150: [],
+    300: []},
+  { name:"Layout, Wrapped Bars", 
+    responses:[],
+    3: [],
+    6: [],
+    12: []},
+  { name:"Layout, Piled Bars", 
+    responses:[],
+    3: [],
+    6: [],
+    12: []},
+];
+
+var trialGroups_Chart  = [
+  {name:"Treemap", responses:[]},
+  {name:"Wrapped Bars", responses:[]},
+  {name:"Piled Bars", responses:[]},
+];
+
+$(document).ready( function(){
+  $.ajax({
+    url: "./responses.json",
+    async: false,
+    success: function(data){
+      data.forEach(function(participant){
+        if(participant.responses===undefined) return;
+        participant.responses.forEach(function(response){
+          response.workerId = participant.workerId;
+          response.stimulus = participant.stimulus;
+          response.startTime = participant.startTime;
+          response.setting = participant.setting;
+          response.task = participant.task;
+          response.chart = participant.chart;
+          response.wrong_training = parseInt(participant.wrong_training);
+          response.total_duration = Math.round(participant.endTime/60000);
+          participant.data_condition = response.rep;
+          Responses.push(response);
+        });
+      });
+    }
+  });
+
+  // For each reponse, find the trialGroups_G12345 and out it there
+  Responses.forEach(function(response){
+    if(response.stimulus==="back") return;
+    // Chart and layout combination
+    if(response.setting==="DS" && response.chart==="TM"){
+      trialGroups_G12345[0].responses.push(response);
+      trialGroups_G12345[0][response.DS].push(response);
+    } else if(response.setting==="DS" && response.chart==="WB"){
+      trialGroups_G12345[1].responses.push(response);
+      trialGroups_G12345[1][response.DS].push(response);
+    } else if(response.setting==="DS" && response.chart==="PB"){
+      trialGroups_G12345[2].responses.push(response);
+      trialGroups_G12345[2][response.DS].push(response);
+    } else if(response.setting==="LA" && response.chart==="WB"){
+      trialGroups_G12345[3].responses.push(response);
+      trialGroups_G12345[3][response.LA].push(response);
+    } else if(response.setting==="LA" && response.chart==="PB"){
+      trialGroups_G12345[4].responses.push(response);
+      trialGroups_G12345[4][response.LA].push(response);
+    }
+    // Chart conditions
+    if(response.chart==="TM"){
+      trialGroups_Chart[0].responses.push(response);
+    } else if(response.chart==="WB"){
+      trialGroups_Chart[1].responses.push(response);
+    } else if(response.chart==="PB"){
+      trialGroups_Chart[2].responses.push(response);
+    }
+  });
+
+  // ****************************************
+  // Bootstrap for comparison and ranking
+
+  var bootstrap_COMP_MARK = [
+    { chart:"TM", layout:"DS", task: "COMP", DS: 75, LA: 3, mean:11.07895, low:9.54, high: 13.26},//
+    { chart:"WB", layout:"DS", task: "COMP", DS: 75, LA: 3, mean:7.17258, low:6.254, high: 8.436},
+    // 3
+    { chart:"TM", layout:"DS", task: "COMP", DS: 150, LA: 3, mean:11.17766, low: 9.85, high: 12.73},
+    { chart:"WB", layout:"DS", task: "COMP", DS: 150, LA: 3, mean:6.894472, low: 6.136, high:8.126},
+    // 6
+    { chart:"TM", layout:"DS", task: "COMP", DS: 300, LA: 3, mean:12.02551, low:10.53, high:14.01},
+    { chart:"WB", layout:"DS", task: "COMP", DS: 300, LA: 3, mean:8.675, low:7.710, high:10.170},
+    /*
+    // 9
+    { chart:"WB", layout:"LA", task: "COMP", DS: 75, LA: 3, mean:10.30412, low:8.66, high:12.57  },
+    { chart:"WB", layout:"LA", task: "COMP", DS: 75, LA: 6, mean:9.815, low: 8.195, high:12.043},
+    { chart:"WB", layout:"LA", task: "COMP", DS: 75, LA: 12, mean:13.43523, low:11.26, high:16.19},
+    */
+  ];
+
+  var bootstrap_RANK_MARK = [
+    { chart:"TM", layout:"DS", task: "RANK", DS: 75, LA: 3, mean:11.48667, low:9.91, high:13.33},
+    { chart:"WB", layout:"DS", task: "RANK", DS: 75, LA: 3, mean:5.626667, low:4.860, high:6.775},
+    // 3
+    { chart:"TM", layout:"DS", task: "RANK", DS: 150, LA: 3, mean:13.77333, low:11.92, high:15.64},    
+    { chart:"WB", layout:"DS", task: "RANK", DS: 150, LA: 3, mean:5.453333, low: 4.820, high:6.264},
+    // 6
+    { chart:"TM", layout:"DS", task: "RANK", DS: 300, LA: 3, mean:11.89667, low: 10.34, high: 13.99},
+    { chart:"WB", layout:"DS", task: "RANK", DS: 300, LA: 3, mean:7.3, low: 6.417, high: 8.300},
+    // 9
+    /*
+    { chart:"WB", layout:"LA", task: "RANK", DS: 75, LA: 3, mean:6.006667, low:5.240, high:7.186  },
+    { chart:"WB", layout:"LA", task: "RANK", DS: 75, LA: 6, mean:7.48, low:6.546, high:8.525},
+    { chart:"WB", layout:"LA", task: "RANK", DS: 75, LA: 12, mean:7.353333, low:6.560, high:8.228},
+    */
+  ];
+  var bootstrap_group=d3.select("#bootstrap_group");
+
+  // The shared scales 
+  var bootstrap_scale_comp_mark = d3.scale.linear().range([0,400]).domain([0,30]);
+  var bootstrap_scale_rank      = d3.scale.linear().range([0,400]).domain([0,30]);
+
+  // COMPARE - MARK STIMULUS
+  var B_COMP_MARK = bootstrap_group.append("span").attr("class","bootstrap_figure B_COMP_MARK");
+  B_COMP_MARK.append("span").attr("class","boot_header").text("Comparison Error");
+  X = B_COMP_MARK.append("span").attr("class","tickGroup tickGroup_comp").selectAll(".tick")
+    .data([0,3,6,9,12,15,18,21,24,27,30])
+    .enter().append("span").attr("class","tick").attr("tickVal",function(d){ return d; })
+    .style("left",function(d){ return bootstrap_scale_comp_mark(d)+"px"; });
+  X.append("span").attr("class","label").text(function(d){ return d+"%"; });
+  X.append("span").attr("class","label label_right").text(function(d){ return d+"%"; });
+
+  var hmpphf = B_COMP_MARK.append("span").attr("class","trials");
+  // add the percentile charts
+  addVizBlock(
+    function(response){ return response.task==="COMP"; }, 
+    function(response){ return Math.abs(response.percent-response.truePercent); }, 
+    "perf_accuracy",
+    bootstrap_scale_comp_mark,
+    hmpphf,
+    0,
+    "Treemap");
+  addVizBlock(
+    function(response){ return response.task==="COMP"; }, 
+    function(response){ return Math.abs(response.percent-response.truePercent); }, 
+    "perf_accuracy",
+    bootstrap_scale_comp_mark,
+    hmpphf,
+    1,
+    "Wrapped Bars");
+  
+  hmpphf.selectAll(".p_Header").attr("faaa",function(d,i){ return i;});
+  
+  hmpphf.append("div").attr("class","breakLine");
+
+  var detailed_comp = hmpphf.selectAll(".trialGroup").data(bootstrap_COMP_MARK)
+    .enter().append("span").attr("class","trialGroup");
+  detailed_comp.append("span").attr("class","trialGroupLabel").html(function(d){ return d.chart + " - " +d.DS + ' Rec.'; });
+  detailed_comp.append("span").attr("class","low_high_line")
+    .style("left",function(d){ return bootstrap_scale_comp_mark(d.low)+"px"; })
+    .style("width",function(d){ return (bootstrap_scale_comp_mark(d.high)-bootstrap_scale_comp_mark(d.low))+"px"; })
+  detailed_comp.append("span").attr("class","mean_pt")
+    .style("left",function(d){ return bootstrap_scale_comp_mark(d.mean)+"px"; })
+  detailed_comp.append("span").attr("class","low_pt")
+    .style("left",function(d){ return bootstrap_scale_comp_mark(d.low)+"px"; })
+  detailed_comp.append("span").attr("class","high_pt")
+    .style("left",function(d){ return bootstrap_scale_comp_mark(d.high)+"px"; })
+
+  // RANK - MARK STIMULUS
+  var B_RANK=bootstrap_group.append("span").attr("class","bootstrap_figure B_RANK");
+  B_RANK.append("span").attr("class","boot_header").text("Ranking Error")
+  X = B_RANK.append("span").attr("class","tickGroup tickGroup_rank").selectAll(".tick")
+    .data([0,3,6,9,12,15,18,21,24,27,30])
+    .enter().append("span").attr("class","tick").attr("tickVal",function(d){ return d; })
+    .style("left",function(d){ return bootstrap_scale_rank(d)+"px"; });
+  X.append("span").attr("class","label").text(function(d){ return d+"%"; })
+  X.append("span").attr("class","label label_right").text(function(d){ return d+"%"; })
+
+  var hmpphf = B_RANK.append("span").attr("class","trials");
+  
+  addVizBlock(
+    function(response){ return response.task==="RANK"; }, 
+    function(response){ return 100*Math.abs(response.rank-response.trueRank)/response.DS; }, 
+    "perf_accuracy",
+    bootstrap_scale_rank,
+    hmpphf,
+    0,
+    "Treemap");
+  addVizBlock(
+    function(response){ return response.task==="RANK"; }, 
+    function(response){ return 100*Math.abs(response.rank-response.trueRank)/response.DS; }, 
+    "perf_accuracy",
+    bootstrap_scale_rank,
+    hmpphf,
+    1,
+    "Wrapped Bars");
+
+  hmpphf.append("div").attr("class","breakLine");
+
+  var detailed_rank = hmpphf.selectAll(".trialGroup").data(bootstrap_RANK_MARK)
+    .enter().append("span").attr("class","trialGroup");
+  detailed_rank.append("span").attr("class","trialGroupLabel").html(function(d){ return d.chart + " - " +d.DS + ' Rec.'; });
+  detailed_rank.append("span").attr("class","low_high_line")
+    .style("left",function(d){ return bootstrap_scale_rank(d.low)+"px"; })
+    .style("width",function(d){ return (bootstrap_scale_rank(d.high)-bootstrap_scale_rank(d.low))+"px"; })
+  detailed_rank.append("span").attr("class","mean_pt")
+    .style("left",function(d){ return bootstrap_scale_rank(d.mean)+"px"; })
+  detailed_rank.append("span").attr("class","low_pt")
+    .style("left",function(d){ return bootstrap_scale_rank(d.low)+"px"; })
+  detailed_rank.append("span").attr("class","high_pt")
+    .style("left",function(d){ return bootstrap_scale_rank(d.high)+"px"; });
+
+
+  d3.selectAll(".bootstrap_figure.B_RANK .percentileViz")
+    .append("div").attr("class","numTrials").html("600");
+
+  d3.selectAll(".bootstrap_figure.B_RANK .trialGroup")
+    .append("div").attr("class","numTrials").html("200");
+
+
+  bootstrap_group.append("span").attr("class","NumResp").html("#<br>Responses");
+});
+
+/*
+
+a<-c(1.3333333333333333,1.3333333333333333,1.3333333333333333,1.3333333333333333,1.3333333333333333,1.3333333333333333,1.3333333333333333,1.3333333333333333,2,2,2,2,2,2,2,2,2,2,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,2.6666666666666665,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,3.3333333333333335,4,4,4,4,4,4,4,4.666666666666667,4.666666666666667,4.666666666666667,4.666666666666667,4.666666666666667,4.666666666666667,5.333333333333333,5.333333333333333,5.333333333333333,5.333333333333333,5.333333333333333,5.333333333333333,5.333333333333333,5.333333333333333,5.333333333333333,6,6,6,6.666666666666667,6.666666666666667,6.666666666666667,6.666666666666667,7.333333333333333,7.333333333333333,7.333333333333333,7.333333333333333,8.666666666666666,8.666666666666666,9.333333333333334,9.333333333333334,9.333333333333334,9.333333333333334,9.333333333333334,9.333333333333334,10,10,10,10,10,10,10,10,10,10,10,10.666666666666666,10.666666666666666,10.666666666666666,10.666666666666666,10.666666666666666,10.666666666666666,11.333333333333334,11.333333333333334,12,12,12.666666666666666,12.666666666666666,12.666666666666666,13.333333333333334,13.333333333333334,13.333333333333334,14,14,14,14.666666666666666,14.666666666666666,15.333333333333334,16,16,16.666666666666668,16.666666666666668,17.333333333333332,17.333333333333332,18,18,18.666666666666668,18.666666666666668,18.666666666666668,20,21.333333333333332,22,23.333333333333332,23.333333333333332,23.333333333333332,24.666666666666668,24.666666666666668,24.666666666666668,25.333333333333332,25.333333333333332,25.333333333333332,26,29.333333333333332,31.333333333333332,31.333333333333332,31.333333333333332,32,32,32,32,32,32,32,32,33.333333333333336,34.666666666666664,35.333333333333336,37.333333333333336,38.666666666666664)
+b <- boot(a, function(u,i) mean(u[i]), R = 999)
+boot.ci(b, type = c("norm", "basic", "perc", "bca"))
+
+*/
+
+</script>
+  </head>
+  <body style='padding-top: 70px;'>
+    <div id="bootstrap_group">
+  </body>
+</html>
