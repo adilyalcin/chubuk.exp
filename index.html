@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./experiment/font-awesome/css/font-awesome.min.css">
 
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,500,500italic,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
 <script>
 
@@ -53,46 +53,55 @@ html, body {
 .indexHeader{
   padding: 1em 0em 0em 1em;
   background-color: rgb(246, 247, 242);
-  box-shadow: 0px 0px 1em #D6D8CE;
+  box-shadow: 0px 0px 3px #D6D8CE;
 }
 .exp_header{
   display: inline-block;
   width: 70px;
+  text-align: right;
+  margin-right: 0.5em;
 }
 
-.affilLogoFilter{
-  margin-left: 10px;
-  -webkit-filter: grayscale(100%);
-     -moz-filter: grayscale(100%);
-       -o-filter: grayscale(100%);
-      -ms-filter: grayscale(100%);
-          filter: grayscale(100%);
+.affilLogo{
+  height: 60px;
+  margin: 0px 10px;
 }
-.affilLogoFilter:hover{
-  -webkit-filter: grayscale(0%);
-     -moz-filter: grayscale(0%);
-       -o-filter: grayscale(0%);
-      -ms-filter: grayscale(0%);
-          filter: grayscale(0%);
+.paperTitle{
+  font-weight: 600;
+  font-size: 1.2em;
 }
 
-#logo_umd{
-  width: 50px;
+input[type='checkbox']{
+  display: none;
 }
-#logo_cs{
-  background: url('http://www.keshif.me/demo/img/umd_cs_white.png');
-  background-size: 41px 50px;
-  height: 50px;
-  width: 41px;
-  display: inline-block;
+input + label{
+  color: gray;
+  cursor: pointer;
 }
-#logo_cs:hover{
-  background: url('http://www.keshif.me/demo/img/umd_cs_black.png');
-  background-size: 41px 50px;
+input + label:hover{
+  color: orangered;
 }
-#logo_hcil{
-  width: 50px;
+input + label + ul{
+  display: none;
 }
+input:checked + label + ul{
+  display: block;
+}
+input:checked + label{
+  pointer-events: none;
+}
+
+ul{
+  list-style-type: disc;
+  list-style-position: outside;
+  margin-left: 2em;
+}
+
+ul > li{
+  margin-bottom: 0.5em;
+}
+
+
 </style>
 	</head>
   <body>
@@ -100,55 +109,77 @@ html, body {
 
     <div class="row indexHeader" >
       <div class="four columns">
-        <h1>chubuk.exp</h1>  
-        </div>
-      <div class="eight columns">
-        <h5 style='font-size: 1.4em'>Experiment data and results for 
-          <a href='http://www.adilyalcin.me/chubuk.js' target='_blank'>chubuk.js</a></h5>  
-        </div>
+        <h1>chubuk.exp</h1>
       </div>
+      <div class="eight columns">
+        <h5 style='font-size: 1.4em; margin-top: 1em;'>Experiment data and results related to
+          <a href='http://www.adilyalcin.me/chubuk.js' target='_blank'>chubuk.js</a>
+        </h5>  
+      </div>
+    </div>
 
     <div class="row" style='margin: 2em 0em 2em 0em;'>
-      <div class="six columns">
+      <div class="eight columns">
         <h4>Paper Figures &amp; Results</h4>
+        <div class='paperTitle'>Ranked-List Visualization: A Graphical Perception Study - CHI2019</div>
+        <!--<input type="checkbox" id="CHI2019Figures" checked><label for='CHI2019Figures'>Hide Figures &amp; Data</label> -->
         <ul>
-          <li><a target='_blank' href="./results/ResultsBrowser.html">Response browser using Keshif</a></li>
-          <li><a target='_blank' href="./results/Figure_Votes.html">Figure Votes</a></li>
-          <li><a target='_blank' href="./results/ResultsFigures.html">Result Figures</a></li>
-          
-          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/COMP_DS_BACK-results.pdf">
-            Stat-Analysis: Comparison - Stimulus: Background</a>
-            <i class='fa fa-file-pdf-o'></i>
-            </li>
-          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/COMP_DS_MARK-results.pdf">
-            Stat-Analysis: Comparison - Stimulus: Mark</a>
-            <i class='fa fa-file-pdf-o'></i>
-            </li>
-          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/RANK_DS_MARK-results.pdf">
-            Stat-Analysis: Ranking</a>
-            <i class='fa fa-file-pdf-o'></i>
-            </li>
-          <li><a target='_blank' href="https://github.com/adilyalcin/chubuk.exp/blob/gh-pages/results/SAS_n_R/OVERVIEW-results.pdf">
-            Stat-Analysis: Distribution Overview</a>
-            <i class='fa fa-file-pdf-o'></i>
-            </li>
-
-          
+          <li>Comparison Task<br>
+            <a target='_blank' href="./results/CHI2019/COMP-training.png">Training Figure </a> |
+            <a target='_blank' href="./results/CHI2019/COMP-test.png">Test Figure </a> |
+            <a target='_blank' href="./results/CHI2019/COMP-data.csv">Experiment Results </a> |
+          </li>
+          <li>Ranking Task<br>
+            <a target='_blank' href="./results/CHI2019/RANK-training.png">Training Figure </a> |
+            <a target='_blank' href="./results/CHI2019/RANK-test.png">Test Figure </a> |
+            <a target='_blank' href="./results/CHI2019/RANK-data.csv">Experiment Results </a> |
+          </li>
+          <li>Find-Average Task<br>
+            <a target='_blank' href="./results/CHI2019/Mean-training.png">Training Figure </a> |
+            <a target='_blank' href="./results/CHI2019/Mean-test.png">Test Figure </a> |
+            <a target='_blank' href="./results/CHI2019/Mean-data.csv">Experiment Results </a> |
+          </li>
         </ul>
-        </div>
-      <div class="six columns">
-        <h4>Experiments</h4>
-        <span class='exp_header'>Setting:</span> <select id='exp_setting' style='font-weight: 700;'>
+
+        <div class='paperTitle'>Raising the Bars: Evaluating Treemaps vs. Wrapped Bars for Dense Visualization of Sorted Numeric Data - GI2017</div>
+        <input type="checkbox" id="GI2017Figures"><label for='GI2017Figures'>Show Figures &amp; Data</label> 
+        <ul>
+          <li><a target='_blank' href="./results/GI2017/ResultsBrowser.html">Explore full data in Keshif dashboard</a></li>
+          <li><a target='_blank' href="./results/GI2017/Figure_Votes.html">Figure - Votes Treemap</a></li>
+          <li><a target='_blank' href="./results/GI2017/ResultsFigures.html">Figures - Experiment Results </a></li>
+          <li><a target='_blank' href="./results/GI2017/SAS_n_R/COMP_DS_BACK-results.pdf">
+            Statistical Analysis: Comparison, Background Stimulus</a> <i class='fa fa-file-pdf-o'></i>
+          </li>
+          <li><a target='_blank' href="./results/GI2017/SAS_n_R/COMP_DS_MARK-results.pdf">
+            Statistical Analysis: Comparison, Mark Stimulus</a> <i class='fa fa-file-pdf-o'></i>
+          </li>
+          <li><a target='_blank' href="./results/GI2017/SAS_n_R/RANK_DS_MARK-results.pdf">
+            Statistical Analysis: Ranking</a> <i class='fa fa-file-pdf-o'></i>
+          </li>
+          <li><a target='_blank' href="./results/GI2017/SAS_n_R/OVERVIEW-results.pdf">
+            Statistical Analysis: Distribution Overview</a> <i class='fa fa-file-pdf-o'></i>
+          </li>
+        </ul>
+      </div>
+
+      <div class="four columns">
+        <h4>Try the Experiment!</h4>
+        <span class='exp_header'>Setting</span> 
+          <select id='exp_setting' style='font-weight: 700;'>
           <option value="DS">Data Density</option>
           <option value="LA">Chart Layout</option>
           </select><br>
-        <span class='exp_header'>Task:</span> <select id='exp_taskType' style='font-weight: 700;'>
+
+        <span class='exp_header'>Task</span>
+          <select id='exp_taskType' style='font-weight: 700;'>
           <option value="COMP">Comparison</option>
           <option value="RANK">Ranking</option>
 <!--          <option value="VIEW">Overview</option>-->
           <option value="MEAN">Average</option>
           </select><br>
-        <span class='exp_header'>Chart:</span> <select id='exp_chart' style='font-weight: 700;'>
+
+        <span class='exp_header'>Chart</span> 
+          <select id='exp_chart' style='font-weight: 700;'>
           <option value="LL">Long list</option>
           <option value="TM">Treemaps</option>
           <option value="WB">Wrapped Bars</option>
@@ -156,35 +187,34 @@ html, body {
           <option value="ZP">Zvinca Plot</option>
           <option value="KB">Packed Bars</option>
           </select><br>
+
         <div id='exp_header_stimulus'>
-          <span class='exp_header'>Stimulus:</span> <select id='exp_stim' style='font-weight: 100;'>
+          <span class='exp_header'>Stimulus</span> <select id='exp_stim' style='font-weight: 100;'>
             <option value="MARK">Mark</option>
             <option value="BACK">Background</option>
             </select>
           </div>
-        <button class="button-primary" id="do_Experiment">Try the Experiment</button><br>
-          (Note: Data is not recorded)
+        <div style='text-align: center;'>
+          <button class="button-primary" id="do_Experiment">Try the Experiment</button><br>
+            <span style='color: gray; font-size: 0.9em;'>*Data is not recorded.</span>
         </div>
+      </div>
     </div>
 
     <div class="row" style='margin: 1em;'>
-      <div class="three columns">
-        <h3 style='margin-bottom: 10px;'>Contact</h3>
-        M. Adil Yalcin (<a href='http://www.adilyalcin.me' target='_blank'>adilyalcin.me</a>)
-        </div>
-      <div class="six columns">
+      <div class="eight columns">
         <h3 style='margin-bottom: 10px;'>License</h3>
         Released under 
         <a href='https://github.com/adilyalcin/chubuk.js/blob/gh-pages/LICENSE' target='_blank'>BSD license</a>
-        <i class='fa fa-copyright'></i>  2016 University of Maryland
+        <i class='fa fa-copyright'></i>  2016-2019 University of Maryland
         </div>
-      <div class="three columns affiliations" style='text-align: right;'>
-        <a href="http://www.umd.edu" target="_blank">
-          <img src="http://www.keshif.me/AggreSet/img/logo_umd.png" id="logo_umd" class="affilLogo affilLogoFilter" title="University of Maryland, College Park"></a>
-        <a href="http://www.cs.umd.edu" target="_blank">
-          <span id="logo_cs" class="affilLogo" title="Computer Science Department"></span></a>
+      <div class="four columns affiliations" style='text-align: right;'>
         <a href="http://www.cs.umd.edu/hcil" target="_blank">
-          <img src="http://www.keshif.me/AggreSet/img/logo_hcil.gif" id="logo_hcil" class="affilLogo affilLogoFilter" title="Human Computer Interaction Lab"></a>
+          <img src="./img/logo-hcil.jpg" class="affilLogo" title="Human Computer Interaction Lab"></a>
+        <a href="http://www.umd.edu" target="_blank">
+          <img src="./img/logo-umd.jpg" class="affilLogo" title="University of Maryland, College Park"></a>
+        <a href="http://www.cs.umd.edu" target="_blank">
+          <img src="./img/logo-umd_cs_white.png" class="affilLogo" title="Computer Science Department"></span></a>
         </div>
       </div>
     </div>
